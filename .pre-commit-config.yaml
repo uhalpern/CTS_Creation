@@ -5,5 +5,5 @@ repos:
         name: pytest
         stages: [pre-commit]
         language: system
-        entry: pipenv run pytest
+        entry: pipenv run pytest tests
         types: [python]
