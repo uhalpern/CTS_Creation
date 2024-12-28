@@ -12,21 +12,30 @@ Version: 0.5
 """
 
 import pandas as pd
+import sqlite3
 
 
-def create_dataframe() -> pd.DataFrame:
+def create_dataframe(connection_string: str) -> pd.DataFrame:
     """
     Connects to MS SQL database and queries table information into dataframe.
     After reading in the data, close the connection to the SQL server
 
-    Args:
+    Note: For now, made up data will be added into the spreadsheet
 
+    Args:
+        connection_string (str): in this case, it is just a path but represents sql server connection str
     Returns:
         raw_dataframe (pd.DataFrame): Dataframe that has the raw, un-formatted data
         from the SQL database. Each column will likely be objects.
     """
 
-    pass
+    connection = sqlite3.connect(connection_string)
+
+    # Query the database
+    query = "SELECT * FROM medical_data;"
+    df = pd.read_sql_query(query, connection)
+
+    return df
 
 
 def transform_header(df: pd.DataFrame, mapping_dict: dict) -> pd.DataFrame:
@@ -73,6 +82,8 @@ def format_date_columns(df: pd.DataFrame, column_names_list: list) -> pd.DataFra
     we want the date to be in the format MM/DD/YY. This function will make use
     of the format_date column to convert all the columns in column_names_list
     into the correct format.
+
+    Note: For now a fake SQL table will be read using SQLite
 
     Args:
         df (pd.DataFrame): dataframe with date columns to format

@@ -5,4 +5,5 @@ from openpyxl.formatting import Rule
 if __name__ == "__main__":
 
     # Read in dataframe and format data
-    raw_dataframe = export_excel.create_dataframe()
+    server_connection_string = "data/medical_data.db"
+    raw_dataframe = export_excel.create_dataframe(server_connection_string)
