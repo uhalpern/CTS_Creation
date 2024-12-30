@@ -24,10 +24,11 @@ def test_date_formatting():
     }
 
     test_df = pd.DataFrame(test_data)
-    export_excel.format_date_columns(test_df, "date_column")
+    formatted_df = export_excel.format_date_columns(test_df, ["date_column"])
 
     format_str = '%m/%d/%y'
-    date_str = test_df["date_column"].loc[0]
+    date_str = formatted_df["date_column"].loc[0]
+    print(date_str)
 
     try:
         # Assert that date format was changed correctly

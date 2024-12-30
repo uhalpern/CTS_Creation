@@ -70,6 +70,8 @@ def format_date(df: pd.DataFrame, column_name: str) -> None:
     """
 
     # Convert columns to datetime
+    print(df.head(3))
+    print(column_name)
     df[column_name] = pd.to_datetime(df[column_name])
     # convert datetime objects back to string with specified format
     df[column_name] = df[column_name].dt.strftime('%m/%d/%y')

@@ -35,3 +35,6 @@ if __name__ == "__main__":
 
     # Reformat the date columns
     reformatted_date = export_excel.format_date_columns(renamed_headers, date_columns)
+    
+    dates = reformatted_date[["DATE OF BIRTH", "COVERAGE EXPIRATION DATE", "DATE OF SERVICE"]]
+    print(dates.head(3))
