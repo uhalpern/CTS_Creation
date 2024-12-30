@@ -51,7 +51,8 @@ def transform_header(df: pd.DataFrame, mapping_dict: dict) -> pd.DataFrame:
     Returns:
         new_headers (pd.Dataframe): copy of df with updated header names
     """
-    pass
+    new_headers = df.rename(columns=mapping_dict, inplace=False)
+    return new_headers
 
 
 def format_date(df: pd.DataFrame, column_name: str) -> None:
