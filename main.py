@@ -19,6 +19,10 @@ headers_mapping = {
     "tpl": "TPL"
 }
 
+date_columns = [
+    "DATE OF BIRTH", "COVERAGE EXPIRATION DATE", "DATE OF SERVICE"
+]
+
 if __name__ == "__main__":
 
     # Read in dataframe and format data
@@ -28,3 +32,6 @@ if __name__ == "__main__":
     # Rename the headers of the dataframe
     renamed_headers = export_excel.transform_header(raw_dataframe, mapping_dict=headers_mapping)
     print(renamed_headers.head(4))
+
+    # Reformat the date columns
+    reformatted_date = export_excel.format_date_columns(renamed_headers, date_columns)

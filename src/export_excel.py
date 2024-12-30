@@ -93,7 +93,11 @@ def format_date_columns(df: pd.DataFrame, column_names_list: list) -> pd.DataFra
         formatted_dates (pd.DataFrame): Copy of df with formatted dates
     """
 
-    pass
+    # Format each date column in place
+    for name in column_names_list:
+        format_date(df, name)
+    
+    return df
 
 
 def insert_headers(df: pd.DataFrame, columns_to_insert: list) -> pd.DataFrame:
