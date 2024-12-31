@@ -11,12 +11,14 @@ Author: Urban Halpern
 Date: 2024-12-26
 Version: 0.5
 """
+
+import os
 import openpyxl.worksheet.datavalidation
 from openpyxl import Workbook, load_workbook
 from openpyxl.formatting import Rule
 from openpyxl.styles import Color, PatternFill, Font, Border, numbers
-from openpyxl.worksheet.datavalidation import DataValidation
-import os
+from openpyxl.worksheet.datavalidation import DataValidation  
+
 
 
 class CustomSpreadsheet:
@@ -27,7 +29,7 @@ class CustomSpreadsheet:
         Args:
             filepath (str): The path to an existing Excel file to load.
                             If not provided, a new workbook will be created.
-        row_range: The number of rows that should be formatted
+            row_range: The number of rows that should be formatted
 
         Attributes:
             workbook (Workbook): The openpyxl Workbook object representing the loaded or newly created workbook.
@@ -128,7 +130,7 @@ class CustomSpreadsheet:
 
         """
 
-        pass
+        dv.error = error_message 
 
     def add_conditional_formatting(self, rule: openpyxl.formatting.Rule, col_to_validate: int):
         """
@@ -146,3 +148,25 @@ class CustomSpreadsheet:
 
         pass
 
+    def get_column_letter(self, column_name: str):
+        """
+        Helper function to find the column letter from a specified column_name. If no matching
+        header is found, will return None.
+
+        Args:
+            column_name (str): column name to extract header from
+
+        Returns:
+            column_letter (str): column letter associated with header.
+        """
+
+        column_letter = None
+
+        # open
+        for col in self.sheet.columns:
+            header_cell = col[0]
+
+            if header_cell.value == column_name:
+                column_letter = header_cell.column_letter
+
+        return column_letter
