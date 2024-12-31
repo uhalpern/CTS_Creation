@@ -13,6 +13,7 @@ Version: 0.5
 
 import pandas as pd
 import sqlite3
+import os
 
 
 def create_dataframe(connection_string: str) -> pd.DataFrame:
@@ -102,7 +103,7 @@ def format_date_columns(df: pd.DataFrame, column_names_list: list) -> pd.DataFra
     return df
 
 
-def insert_headers(df: pd.DataFrame, columns_to_insert: list) -> pd.DataFrame:
+def insert_headers(df: pd.DataFrame, columns_to_insert: dict) -> pd.DataFrame:
     """
     Some of the columns in the output spreadsheet are not extracted from the SQL
     database. Instead, these columns will be for user entry. This function
@@ -110,24 +111,46 @@ def insert_headers(df: pd.DataFrame, columns_to_insert: list) -> pd.DataFrame:
 
     Args:
         df (pd.DataFrame): dataframe with date columns to format
-        columns_to_insert (list): list of all the column names (str) to insert
+        columns_to_insert (dict): dict of column_name: position mapping
     Returns:
         columns_inserted (pd.DataFrame): copy of df with inserted columns
     """
 
-    pass
+    columns_inserted = df.copy()
+
+    for new_column in columns_to_insert:
+        columns_inserted.insert(columns_to_insert[new_column], new_column, None)
+
+    return columns_inserted
 
 
-def create_sheet(final_df: pd.DataFrame, sheet_name: str) -> None:
+
+
+
+def create_sheet(final_df: pd.DataFrame, sheet_name: str = "Sheet1",  file_name: str = "output.xlsx", file_path = ".\\generated_sheets") -> None:
     """
     Saves the dataframe to an Excel file using the openpyxl engine. The Excel file
-    name should be unique to not conflict with other generated Excel files.
+    name should be unique to not conflict with other generated Excel files. The function
+    will make sure the file is unique in the specified directory by raising an exception
 
     Args:
         final_df: The final dataframe with all the formatted data to convert into a spreadsheet.
         sheet_name (str): The name of the sheet to create.
+        file_name (str): Name of the excel workbook
 
     Returns:
-        None
+        full_path (str): Path where spreadsheet was saved
     """
-    pass
+        
+    # Combine path and file name
+    full_path = os.path.join(file_path, file_name)
+    
+    # Error handling for sheet already existing
+    if os.path.exists(full_path):
+        raise FileExistsError(f'The file already exists: {full_path}')
+
+    # Save the sheet using the full path
+    final_df.to_excel(full_path, sheet_name=sheet_name, engine='openpyxl', index=False)
+    print(f'Sheet saved to {file_name} with sheet name: {sheet_name} at {full_path}') 
+
+    return full_path
