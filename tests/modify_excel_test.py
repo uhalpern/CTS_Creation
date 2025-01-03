@@ -41,7 +41,11 @@ def test_data_validation():
         # Assert the data validation was added
         assert test_to_modify.sheet.data_validations.count == 1
     except AssertionError:
-        print(f"Incorrect number of data validation of objects added: {test_to_modify.sheet.data_validations.count} present")
+        print((
+            f"Incorrect number of data validation of objects added: "
+            f"{len(test_to_modify.sheet.data_validations.count)} present\n"
+            f"1 expected"
+        ))
         os.remove(path)
         raise
 
@@ -49,8 +53,11 @@ def test_data_validation():
         # Assert formatting rule was added
         assert len(test_to_modify.sheet.conditional_formatting) == 1
     except AssertionError:
-        print(f"Incorrect number of data validation of objects added: {len(test_to_modify.sheet.conditional_formatting)} present")
-        os.remove(path)
+        print((
+            f"Incorrect number of conditional formatting rules added: "
+            f"{len(test_to_modify.sheet.conditional_formatting)} present\n"
+            f"1 expected"
+        ))
         raise
 
     # Test error handling for adding validaiton to missing column

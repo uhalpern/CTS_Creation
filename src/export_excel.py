@@ -141,7 +141,11 @@ def create_sheet(final_df: pd.DataFrame, sheet_name: str = "Sheet1",  file_name:
     Returns:
         full_path (str): Path where spreadsheet was saved
     """
-        
+    
+    # Create directory if it does not already exist
+    if not os.path.exists(file_path):
+        os.mkdir(file_path)
+
     # Combine path and file name
     full_path = os.path.join(file_path, file_name)
     
