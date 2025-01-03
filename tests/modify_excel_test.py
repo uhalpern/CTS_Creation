@@ -14,7 +14,8 @@ def test_data_validation():
     test_val_dict = {
         "date_column": {
             "val_formula": "=AND(ISNUMBER(H1), H1 > DATE(1900, 1, 1))",
-            "error_msg": "Invalid Date Format - Enter date as MM/DD/YYYY"
+            "error_msg": "Invalid Date Format - Enter date as MM/DD/YYYY",
+            "format_formula": "=AND(ISNUMBER(H1), H1 > DATE(1900, 1, 1))"
         }
     }
 
@@ -41,6 +42,14 @@ def test_data_validation():
         assert test_to_modify.sheet.data_validations.count == 1
     except AssertionError:
         print(f"Incorrect number of data validation of objects added: {test_to_modify.sheet.data_validations.count} present")
+        os.remove(path)
+        raise
+
+    try:
+        # Assert formatting rule was added
+        assert len(test_to_modify.sheet.conditional_formatting) == 1
+    except AssertionError:
+        print(f"Incorrect number of data validation of objects added: {len(test_to_modify.sheet.conditional_formatting)} present")
         os.remove(path)
         raise
 

@@ -155,5 +155,4 @@ if __name__ == "__main__":
 
     # Delete the unformatted Excel file
     os.remove(path)
-
-    
+ 
