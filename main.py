@@ -23,13 +23,19 @@ date_columns = [
     "DATE OF BIRTH", "COVERAGE EXPIRATION DATE", "DATE OF SERVICE"
 ]
 
-validation_dict = {
+validation_format_dict = {
+    "CONTROL/ACCOUNT #": {
+        "format_formula": '=AND(ISBLANK(A2),OR(NOT(ISBLANK(B2)),NOT(ISBLANK(C2))))'
+    },
+
     "MEDICAID ID": {
         "val_formula": '=OR(AND(LEN(F1)=12,ISNUMBER(VALUE(LEFT(F1,2))),MID(F1,3,1)="-",ISNUMBER(VALUE(MID(F1,4,6))),MID(F1,10,1)="-",ISNUMBER(VALUE(RIGHT(F1,2)))),AND(LEN(F1)=10,NOT(VALUE(LEFT(F1))=0),ISNUMBER(VALUE(F1))))',
         "error_msg": (
             "Input must be in valid medicaid id format (**-******-**)"
         ),
+        "format_formula": '=AND(NOT(AND(LEN(F2)=12,ISNUMBER(VALUE(LEFT(F2,2))),MID(F2,3,1)="-",ISNUMBER(VALUE(MID(F2,4,6))),MID(F2,10,1)="-",ISNUMBER(VALUE(RIGHT(F2,2))))),NOT(AND(LEN(F2)=10,ISNUMBER(VALUE(F2)))),AND(ISBLANK(F2),NOT(ISBLANK(G2))))'
     },
+
     "DATE OF BIRTH": {
         "val_formula": '=AND(ISNUMBER(E1), E1 > DATE(1900, 1, 1))',
         "error_msg": (
@@ -62,14 +68,36 @@ validation_dict = {
         "val_formula": '=AND(LEN(J2)=2,IF(ISERROR(FIND(",",J2,1)),TRUE,FALSE),IF(ISERROR(FIND("-",J2,1)),TRUE,FALSE),IF(ISERROR(FIND(";",J2,1)),TRUE,FALSE),IF(ISERROR(FIND(CHAR(10),J2,1)),TRUE,FALSE))',
         "error_msg": (
             "Invalid entry: enter a single modifier two characters long"
-        )
+        ),
+        "format_formula": '=AND(NOT(LEN(J2)=2),NOT(ISBLANK(J2)))'
     },
 
     "AMOUNT DUE": {
-        "val_formula": '=AND(ISNUMBER(M2), M2 >=0, M2 <= K2)',
+        "val_formula": '=AND(ISNUMBER(M2), M2 >=0, M2 <= $K2)',
         "error_msg": (
             "Invalid entry: amount due must not exceed billed amount"
-        )
+        ),
+        "format_formula": '=OR(NOT(AND(IFERROR(M2<=$K2,FALSE),IFERROR($M2+$P2+$Q2+$S2<=$K2,FALSE))),AND(NOT(ISBLANK(M2)),NOT(ISNUMBER(M2))))'
+    },
+
+    "CONTRACTUAL ADJUSTMENT": {
+        "val_formula": '=AND(ISNUMBER(S2), S2 >=0, S2 <= $K2)',
+        "error_msg": (
+            "Invalid entry: amount due must not exceed billed amount"
+        ),
+        "format_formula": '=OR(NOT(AND(IFERROR(M2<=$K2,FALSE),IFERROR($M2+$P2+$Q2+$S2<=$K2,FALSE))),AND(NOT(ISBLANK(M2)),NOT(ISNUMBER(M2))))'
+    },
+
+    "SPEND DOWN": {
+        "val_formula": '=AND(ISNUMBER(P2), P2 >=0, P2 <= $K2)',
+        "error_msg": (
+            "Invalid entry: amount due must not exceed billed amount"
+        ),
+        "format_formula": '=OR(NOT(AND(IFERROR(M2<=$K2,FALSE),IFERROR($M2+$P2+$Q2+$S2<=$K2,FALSE))),AND(NOT(ISBLANK(M2)),NOT(ISNUMBER(M2))))'
+    },
+
+    "TPL AMOUNT": {
+        "format_formula": '=OR(AND(NOT(ISBLANK(Q2)),NOT(ISNUMBER(Q2))),AND(ISBLANK(Q2),NOT(ISBLANK(R2))))'
     }
 }
 
@@ -120,7 +148,7 @@ if __name__ == "__main__":
     ws_to_modify.set_sheet("Sheet1")
 
     # Add data validation rules to the worksheet
-    modify_excel.data_validation_handler(ws_to_modify, validation_dict)
+    modify_excel.data_validation_handler(ws_to_modify, validation_format_dict)
 
     # Save the modified Excel file
     ws_to_modify.workbook.save("modified_output.xlsx")

@@ -18,6 +18,7 @@ from openpyxl import Workbook, load_workbook
 from openpyxl.formatting import Rule
 from openpyxl.styles import Color, PatternFill, Font, Border, numbers
 from openpyxl.worksheet.datavalidation import DataValidation
+from openpyxl.formatting.rule import FormulaRule 
 
 
 
@@ -53,7 +54,7 @@ class CustomSpreadsheet:
     # Simple function to set the active sheet using the sheet name
     def set_sheet(self, sheet_name: str):
         self.sheet = self.workbook[sheet_name]
-        
+      
 
     # Applies the specified background color to the header row
     def set_header_color(self, color_code: str = "4472c4"):
@@ -115,20 +116,24 @@ class CustomSpreadsheet:
 
         pass
 
-    def add_data_validation(self, dv: openpyxl.worksheet.datavalidation.DataValidation,
+    def add_data_validation(self, formula: str,
                             col_to_validate: str,
                             error_message: str = "Error, the data you entered violates the data validation rules rule set for this cell."):
         """
-        Adds a defined datavalidation object to the sheet. The data validation object should
-        already be defined and the column to apply the validation to should be specified.
+        Adds a defined datavalidation object to the sheet based on a defined formula 
         The function will apply the data validation to all rows in the columns using self.range
 
         Args:
-            dv (openpyxl DataValidation object): data validation rule to add to sheet
+            formula (str): data validation formula to add to sheet
             col_to_validate (str): the letter of the column to apply the validation to
             error_message (str): error message to display when data validation is violated
 
         """
+
+        # Define a data validation object
+        dv = DataValidation(type="custom",
+                            formula1=formula,
+                            showErrorMessage=True)
 
         dv.error = error_message
         add_str = f'{col_to_validate}2:{col_to_validate}{self.range}'
@@ -138,7 +143,7 @@ class CustomSpreadsheet:
         # Add validation object to the sheet
         self.sheet.add_data_validation(dv)
 
-    def add_conditional_formatting(self, rule: openpyxl.formatting.Rule, col_to_validate: int):
+    def add_conditional_formatting(self, formula: str, col_to_validate: int):
         """
         Adds a defined rule object to the sheet. The rule object should
         already be defined and the column to apply the formatting rule
@@ -146,13 +151,23 @@ class CustomSpreadsheet:
          to all cells in the column
 
         Args:
-            rule (openpyxl.formatting Rule object): formatting rule to add to sheet
+            formula (str): conditional formatting formula used to creat Rule object
             col_to_validate (int): the integer value of the column to apply the validation to
 
 
         """
 
-        pass
+        # Define conditional formatting rule to add
+        yellow_highlight = PatternFill(start_color='ffff00',
+               end_color='ffff00',
+               fill_type='solid')
+        rule = FormulaRule(formula=[formula], stopIfTrue=True, fill=yellow_highlight)
+
+        add_str = f'{col_to_validate}2:{col_to_validate}{self.range}'
+
+        # Add conditional formatting to sheet
+        self.sheet.conditional_formatting.add(add_str, rule)
+
 
     def get_column_letter(self, column_name: str) -> str:
         """
@@ -173,7 +188,7 @@ class CustomSpreadsheet:
 
             # Extract the first row cell
             header_cell = col[0]
-            
+         
             # If header cell name found, return column letter
             if header_cell.value == column_name:
                 return header_cell.column_letter
@@ -181,21 +196,22 @@ class CustomSpreadsheet:
         return column_letter
 
 
-def data_validation_handler(workbook: CustomSpreadsheet, validation_dict: dict) -> None:
+def data_validation_handler(workbook: CustomSpreadsheet, validation_format_dict: dict) -> None:
     """
         This will ingest all of the data validation definitions for each of the columns
         into a CustomSpreadsheet object.
 
         Args:
             workbook (CustomSpreadsheet): The workbook to add the data validation rules to
-            validation_dict (dict): Holds the defined data validation rules for each column. {header_name: {validation_params}}
+            validation__format dict (dict): Holds the defined data validation and conditional formatting rules for each column.
+                                            {header_name: {validation_params}}
 
         Returns:
             None
     """
 
-    # For each header in the validation_dict, add the corresponding data validation
-    for header in validation_dict:
+    # For each header in the validation_format_dict, add the corresponding data validation
+    for header in validation_format_dict:
 
         # Get the column letter from the header_name
         col = workbook.get_column_letter(header)
@@ -203,16 +219,30 @@ def data_validation_handler(workbook: CustomSpreadsheet, validation_dict: dict) 
         # Raise exception for header not found
         if col is None:
             raise ValueError(f'{header} returned None as column letter. Check to make sure header exists in sheet')
-        
-        # Create a new data validation object
-        formula = validation_dict[header]["val_formula"]
-        error_message = validation_dict[header]["error_msg"]
+      
+        # Add a new data validation rule
+        # Check if key exists
+        try:
+            val_formula = validation_format_dict[header]["val_formula"]
+            error_message = validation_format_dict[header]["error_msg"]
+        except KeyError:
+            val_formula = None
+            error_message = None
 
-        print(formula)
-        print(error_message)
+        # print(formula)
+        # print(error_message)
 
-        # Define data validation object and add it to the workbook
-        dv = DataValidation(type="custom",
-                            formula1=formula,
-                            showErrorMessage=True)
-        workbook.add_data_validation(dv, col, error_message=error_message)
+        # Add data validation rule to sheet
+        if val_formula is not None:
+            workbook.add_data_validation(val_formula, col, error_message=error_message)
+
+        # Create a new conditional formatting rule
+        # Check if key exists
+        try:
+            format_formula = validation_format_dict[header]["format_formula"]
+        except KeyError:
+            format_formula = None
+
+        # Add conditional formatting rule to sheet
+        if format_formula is not None:
+            workbook.add_conditional_formatting(format_formula, col)
