@@ -50,7 +50,6 @@ def test_create_sheet():
 
     test_df = pd.DataFrame(test_data)
 
-    
     # Test successful creation:
     
     path = export_excel.create_sheet(test_df, file_name="test.xlsx")
