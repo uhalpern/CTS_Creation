@@ -29,7 +29,7 @@ validation_format_dict = {
     },
 
     "MEDICAID ID": {
-        "val_formula": '=OR(AND(LEN(F1)=12,ISNUMBER(VALUE(LEFT(F1,2))),MID(F1,3,1)="-",ISNUMBER(VALUE(MID(F1,4,6))),MID(F1,10,1)="-",ISNUMBER(VALUE(RIGHT(F1,2)))),AND(LEN(F1)=10,NOT(VALUE(LEFT(F1))=0),ISNUMBER(VALUE(F1))))',
+        "val_formula": '=OR(AND(LEN(F2)=12,ISNUMBER(VALUE(LEFT(F2,2))),MID(F2,3,1)="-",ISNUMBER(VALUE(MID(F2,4,6))),MID(F2,10,1)="-",ISNUMBER(VALUE(RIGHT(F2,2)))),AND(LEN(F2)=10,NOT(VALUE(LEFT(F2))=0),ISNUMBER(VALUE(F2))))',
         "error_msg": (
             "Input must be in valid medicaid id format (**-******-**)"
         ),
@@ -104,8 +104,8 @@ validation_format_dict = {
 inserted_columns = {
     "GRAND TOTAL": 11, 
     "AMOUNT DUE": 12, 
-    "LOCAL_SHARE": 13, 
-    "FEDERAL_SHARE": 14, 
+    "LOCAL SHARE": 13, 
+    "FEDERAL SHARE": 14, 
     "CONTRACTUAL ADJUSTMENT": 18, 
     "ADJUSTMENT REASON": 19, 
     "NOTE": 20
@@ -149,6 +149,9 @@ if __name__ == "__main__":
 
     # Add data validation rules to the worksheet
     modify_excel.data_validation_handler(ws_to_modify, validation_format_dict)
+
+    # Style the worksheet
+    modify_excel.style_handler(ws_to_modify)
 
     # Save the modified Excel file
     ws_to_modify.workbook.save("modified_output.xlsx")

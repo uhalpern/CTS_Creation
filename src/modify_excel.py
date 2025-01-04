@@ -16,7 +16,7 @@ import os
 import openpyxl.worksheet.datavalidation
 from openpyxl import Workbook, load_workbook
 from openpyxl.formatting import Rule
-from openpyxl.styles import Color, PatternFill, Font, Border, numbers
+from openpyxl.styles import Color, PatternFill, Font, Border, numbers, Side
 from openpyxl.worksheet.datavalidation import DataValidation
 from openpyxl.formatting.rule import FormulaRule 
 
@@ -58,11 +58,13 @@ class CustomSpreadsheet:
 
     # Applies the specified background color to the header row
     def set_header_color(self, color_code: str = "4472c4"):
-        pass
+        header_fill = PatternFill(start_color=color_code, end_color=color_code, fill_type="solid")
+        for cell in self.sheet[1]:
+            cell.fill = header_fill
 
     # Sets the specified height (in pixels) of the header row
     def set_header_height(self, header_row_height: float = 22.9):
-        pass
+       self.sheet.row_dimensions[1].height = header_row_height
 
     def set_column_width(self, multiplier: float = 1.2):
         """
@@ -76,33 +78,78 @@ class CustomSpreadsheet:
 
         """
 
-        pass
+        # TODO: Have a max width cut off point for long cell values
 
-    def set_alternating_fill(self, stop_row: int = 1000, first_color: str = "d9e1f2", second_color: str = "b4c6e7"):
+        for col in self.sheet.columns:
+            max_length = 0
+            column = col[0].column_letter
+
+            # Find cell in column with longest value
+            for cell in col:  
+                
+                # If cell is not empty, check for width
+                if cell.value is not None: 
+                    # If the current cell is larger than the cell width, increase the max width
+                    if len(str(cell.value)) > max_length:
+                        max_length = len(str(cell.value))
+
+            # Adjust cell width to width of max value
+            adjusted_width = (max_length + 1) * multiplier
+            self.sheet.column_dimensions[column].width = adjusted_width
+        
+
+    def set_alternating_fill(self, first_color: str = "d9e1f2", second_color: str = "b4c6e7"):
         """
         Creates an alternating pattern on the spreadsheet of filled rows and non-filled rows.
         The row colors will be formatted up to the defined stop_row with the specified color.
 
         Args:
-            stop_row (int): formatting will apply to up to this row in the spreadsheet.
             first_color (str): to fill all the even rows
             second_color (str): to fill all the odd rows
 
         """
-        pass
 
-    def set_accounting_format(self, column_num: int, stop_row: int = 1000):
+        # define fills
+        fill_one = PatternFill(start_color=first_color, end_color=first_color, fill_type="solid")
+        fill_two = PatternFill(start_color=second_color, end_color=second_color, fill_type="solid")
+        thin_border = Border(left=Side(style='thin', color='595959'),
+                     right=Side(style='thin', color='595959'),
+                     top=Side(style='thin', color='595959'),
+                     bottom=Side(style='thin', color='595959'))
+        
+        for row in self.sheet.iter_rows(min_row=2, max_row=self.range):
+            # retrieve the row number of the current row object and check if even or odd
+            # fill even rows with fill one and odd row with fill two
+            if row[0].row % 2 == 0:  
+                fill = fill_one
+            else:
+                fill = fill_two
+
+            # Apply the fill to all the cells in the row
+            for cell in row:
+                cell.fill = fill
+                cell.border = thin_border
+
+
+    def set_custom_format(self, col_to_format: str, format_str: str):
         """
-        Sets a spreadsheet column to have a format equivalent to the accounting format in Excel
-        Must be defined manually since openpyxl does not have an implementation for this format.
-        stop_row must also be defined since formatting must be applied to each cell individually
+        Sets a spreadsheet column to have a format equivalent to a custom format in Excel
+        Will allow certain columns to automatically convert recognized inputs to format.
+        Unrecognized inputs will be caught by data validation.
 
         Args:
-            stop_row (int): formatting will apply to up to this row in the spreadsheet.
-            column_num (int): column to apply formatting to
+            col_to_format (str): column header to apply formatting to
+            format_str (str): format string to apply to column
         """
 
-        pass
+        col_letter = self.get_column_letter(col_to_format)
+
+        # Raise exception when no matching column is found in spreadsheet
+        if col_letter is None:
+            raise ValueError(f'{col_to_format} returned None as column letter. Check to make sure header exists in sheet')
+
+        for cell in self.sheet[col_letter]:
+            cell.number_format = format_str
 
     def set_number_of_columns(self, num_columns: int = 22):
         """
@@ -114,8 +161,29 @@ class CustomSpreadsheet:
             num_columns (int): number of columns to display
         """
 
-        pass
+        for col in range(num_columns, 16385):
 
+            # return cell object based on given coordinates and return column_letter property
+            col_letter = self.sheet.cell(row=1, column=col).column_letter
+
+            # set column to hidden
+            self.sheet.column_dimensions[col_letter].hidden = True
+
+    def add_formulas(self):
+
+        grand_total_formula = "=SUM(M{},P{},Q{},S{})"
+        local_share_formula = "=FLOOR($M{}*0.17,0.01)"
+        federal_share_formula = "=FLOOR($M{}*0.83,0.01)"
+
+        grand_total_col = self.get_column_letter("GRAND TOTAL")
+        local_share_col = self.get_column_letter("LOCAL SHARE")
+        federal_share_col = self.get_column_letter("FEDERAL SHARE")
+
+        for i in range(2, self.range + 1):
+            self.sheet[f'{grand_total_col}{i}'] = grand_total_formula.format(i,i,i,i)
+            self.sheet[f'{local_share_col}{i}'] = local_share_formula.format(i)
+            self.sheet[f'{federal_share_col}{i}'] = federal_share_formula.format(i)
+            
     def add_data_validation(self, formula: str,
                             col_to_validate: str,
                             error_message: str = "Error, the data you entered violates the data validation rules rule set for this cell."):
@@ -246,3 +314,40 @@ def data_validation_handler(workbook: CustomSpreadsheet, validation_format_dict:
         # Add conditional formatting rule to sheet
         if format_formula is not None:
             workbook.add_conditional_formatting(format_formula, col)
+
+def style_handler(workbook: CustomSpreadsheet):
+
+    workbook.set_header_color(color_code="4472c4")
+    workbook.set_header_height(header_row_height=22.9)
+    workbook.set_column_width(multiplier=1.2)
+    workbook.set_alternating_fill()
+    workbook.set_number_of_columns(num_columns=22)
+
+    """
+    1) 
+        _($ - adds space to align currency symbols
+        *   - makes currency symbol align to the left
+        #,##0.00 - number format for thousand separators and two decimal places
+    2)
+        _($* "-"??_) - replaces 0 values with dash
+    3)
+        _(@_) - aligns text
+
+    """
+    accounting_format = '_($* #,##0.00_);_($* (#,##0.00);_($* "-"??_);_(@_)'       #'(_$* #,##0.00;;_($* "-"??_);_(@_)'
+
+    # Format string for medicaid id column
+    medicaid_id_format = '00-000000-00'
+
+    monetary_cols = ['BILLED AMOUNT', 'GRAND TOTAL', 'AMOUNT DUE', 
+                     'LOCAL SHARE', 'FEDERAL SHARE', 'SPEND DOWN', 
+                     'TPL AMOUNT']
+
+    for col in monetary_cols:
+        workbook.set_custom_format(col, accounting_format)
+
+    workbook.set_custom_format("MEDICAID ID", medicaid_id_format)
+
+    workbook.add_formulas()
+
+
