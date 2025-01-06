@@ -85,10 +85,10 @@ class CustomSpreadsheet:
             column = col[0].column_letter
 
             # Find cell in column with longest value
-            for cell in col:  
+            for cell in col:
                 
                 # If cell is not empty, check for width
-                if cell.value is not None: 
+                if cell.value is not None:
                     # If the current cell is larger than the cell width, increase the max width
                     if len(str(cell.value)) > max_length:
                         max_length = len(str(cell.value))
@@ -116,11 +116,11 @@ class CustomSpreadsheet:
                      right=Side(style='thin', color='595959'),
                      top=Side(style='thin', color='595959'),
                      bottom=Side(style='thin', color='595959'))
-        
+      
         for row in self.sheet.iter_rows(min_row=2, max_row=self.range):
             # retrieve the row number of the current row object and check if even or odd
             # fill even rows with fill one and odd row with fill two
-            if row[0].row % 2 == 0:  
+            if row[0].row % 2 == 0:
                 fill = fill_one
             else:
                 fill = fill_two
@@ -204,9 +204,10 @@ class CustomSpreadsheet:
                             showErrorMessage=True)
 
         dv.error = error_message
+        # Apply the validation to range (EX: M1:M1000)
         add_str = f'{col_to_validate}2:{col_to_validate}{self.range}'
 
-        dv.add(add_str) # Apply the validation to range (EX: M1:M1000)
+        dv.add(add_str) 
 
         # Add validation object to the sheet
         self.sheet.add_data_validation(dv)
@@ -260,8 +261,10 @@ class CustomSpreadsheet:
             # If header cell name found, return column letter
             if header_cell.value == column_name:
                 return header_cell.column_letter
-
-        return column_letter
+        
+        # Raise error if the column was not found in the sheet.
+        if column_letter is None:
+            raise ValueError(f'Specified Column: {column_name} not found in sheet.')
 
 
 def data_validation_handler(workbook: CustomSpreadsheet, validation_format_dict: dict) -> None:
@@ -283,10 +286,6 @@ def data_validation_handler(workbook: CustomSpreadsheet, validation_format_dict:
 
         # Get the column letter from the header_name
         col = workbook.get_column_letter(header)
-
-        # Raise exception for header not found
-        if col is None:
-            raise ValueError(f'{header} returned None as column letter. Check to make sure header exists in sheet')
       
         # Add a new data validation rule
         # Check if key exists
