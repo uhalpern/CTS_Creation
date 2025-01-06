@@ -13,6 +13,7 @@ Version: 0.5
 """
 
 import os
+import re
 import openpyxl.worksheet.datavalidation
 from openpyxl import Workbook, load_workbook
 from openpyxl.formatting import Rule
@@ -144,10 +145,6 @@ class CustomSpreadsheet:
 
         col_letter = self.get_column_letter(col_to_format)
 
-        # Raise exception when no matching column is found in spreadsheet
-        if col_letter is None:
-            raise ValueError(f'{col_to_format} returned None as column letter. Check to make sure header exists in sheet')
-
         for cell in self.sheet[col_letter]:
             cell.number_format = format_str
 
@@ -169,20 +166,29 @@ class CustomSpreadsheet:
             # set column to hidden
             self.sheet.column_dimensions[col_letter].hidden = True
 
-    def add_formulas(self):
+    def add_value_formula(self, col_header: str, value_formula: str):
+        """
+        Adds a value formula to a specified column in the sheet object. A value formula
+        is a formula applied to a cell that calculates the value in that cell.
+        Example formula: =FLOOR($M{row}*0.17,0.01)
 
-        grand_total_formula = "=SUM(M{},P{},Q{},S{})"
-        local_share_formula = "=FLOOR($M{}*0.17,0.01)"
-        federal_share_formula = "=FLOOR($M{}*0.83,0.01)"
+        Args:
+            col_header (str): column header representing the column to add formula to
+            value_formula (str): formula to apply to cell
+        """
 
-        grand_total_col = self.get_column_letter("GRAND TOTAL")
-        local_share_col = self.get_column_letter("LOCAL SHARE")
-        federal_share_col = self.get_column_letter("FEDERAL SHARE")
+        col_letter = self.get_column_letter(col_header)
 
-        for i in range(2, self.range + 1):
-            self.sheet[f'{grand_total_col}{i}'] = grand_total_formula.format(i,i,i,i)
-            self.sheet[f'{local_share_col}{i}'] = local_share_formula.format(i)
-            self.sheet[f'{federal_share_col}{i}'] = federal_share_formula.format(i)
+        # Check for the '{row}' placeholder using regex
+        if not re.search(r"\{row\}", value_formula):
+            raise ValueError(f"The provided formula: {value_formula} does not contain a 'row' placeholder.")
+
+        # Start iterating at 2 to skip the header row. Excel rows start at 1
+        for row_num in range(2, self.range + 1):
+
+            # Apply the formula to each row in the column.
+            # The keyword argument row represents placeholders in the formula string that will be replaced by row_num
+            self.sheet[f'{col_letter}{row_num}'] = value_formula.format(row=row_num)
             
     def add_data_validation(self, formula: str,
                             col_to_validate: str,
@@ -269,8 +275,8 @@ class CustomSpreadsheet:
 
 def data_validation_handler(workbook: CustomSpreadsheet, validation_format_dict: dict) -> None:
     """
-        This will ingest all of the data validation definitions for each of the columns
-        into a CustomSpreadsheet object.
+        This will ingest all of the data validation and conditional formatting
+        definitions for each of the columns into a CustomSpreadsheet object.
 
         Args:
             workbook (CustomSpreadsheet): The workbook to add the data validation rules to
@@ -295,9 +301,6 @@ def data_validation_handler(workbook: CustomSpreadsheet, validation_format_dict:
         except KeyError:
             val_formula = None
             error_message = None
-
-        # print(formula)
-        # print(error_message)
 
         # Add data validation rule to sheet
         if val_formula is not None:
@@ -333,7 +336,7 @@ def style_handler(workbook: CustomSpreadsheet):
         _(@_) - aligns text
 
     """
-    accounting_format = '_($* #,##0.00_);_($* (#,##0.00);_($* "-"??_);_(@_)'       #'(_$* #,##0.00;;_($* "-"??_);_(@_)'
+    accounting_format = '_($* #,##0.00_);_($* (#,##0.00);_($* "-"??_);_(@_)'  
 
     # Format string for medicaid id column
     medicaid_id_format = '00-000000-00'
@@ -347,6 +350,15 @@ def style_handler(workbook: CustomSpreadsheet):
 
     workbook.set_custom_format("MEDICAID ID", medicaid_id_format)
 
-    workbook.add_formulas()
 
+    grand_total_formula = "=SUM(M{row},P{row},Q{row},S{row})"
+    local_share_formula = "=FLOOR($M{row}*0.17,0.01)"
+    federal_share_formula = "=FLOOR($M{row}*0.83,0.01)"
 
+        # grand_total_col = self.get_column_letter("GRAND TOTAL")
+        # local_share_col = self.get_column_letter("LOCAL SHARE")
+        # federal_share_col = self.get_column_letter("FEDERAL SHARE")
+
+    workbook.add_value_formula("GRAND TOTAL", grand_total_formula)
+    workbook.add_value_formula("LOCAL SHARE", local_share_formula)
+    workbook.add_value_formula("FEDERAL SHARE", federal_share_formula)
