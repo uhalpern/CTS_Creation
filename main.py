@@ -1,5 +1,6 @@
 from src import export_excel, modify_excel
 import os
+from openpyxl import load_workbook
 
 
 headers_mapping = {
@@ -148,7 +149,12 @@ if __name__ == "__main__":
     ws_to_modify.set_sheet("Sheet1")
 
     # Add data validation rules to the worksheet
-    modify_excel.data_validation_handler(ws_to_modify, validation_format_dict)
+    # modify_excel.data_validation_handler(ws_to_modify, validation_format_dict)
+    template_workbook = workbook = load_workbook("CTS_Example.xlsx")
+    template_sheet = workbook["MAP or COFA"]
+
+    ws_to_modify.sheet.data_validations = template_sheet.data_validations
+
 
     # Style the worksheet
     modify_excel.style_handler(ws_to_modify)
