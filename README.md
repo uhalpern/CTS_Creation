@@ -36,4 +36,26 @@ pip install pipenv
 
     This will automatically install the packages listed in `Pipfile` and `Pipfile.lock`
 
+3. (Optional) - Install Developer Packages:
+    ```bash
+    pipenv install --dev
+    ```
+
 ## Usage
+
+### Generating Example Spreadsheet
+
+The configuration and fake data is already created for the example spreadsheet. Just run the following:
+
+1. Activate Environment:
+
+    ```bash
+    pipenv shell
+    ```
+2. Remove `python_CTS_example.xlsx` from `generated_sheets`
+3. Run the main script
+    ```bash
+    python main.py
+    ```
+
+

@@ -1,4 +1,5 @@
-import json, re
+import json
+import os
 
 validation_format_dict = {
     'data_validation': {
@@ -153,8 +154,12 @@ validation_format_dict2 = {
     },
 }
 
-# with open('config1.json', 'w') as f:
-#     json.dump(validation_format_dict, f, indent=4)
+# Get path to parent directory
+parent_dir = os.path.abspath(os.path.join(os.getcwd(), ".."))
 
-with open('config.json', 'w') as f:
+# Define the path one directory up
+file_path = os.path.join(parent_dir, 'config.json')
+
+# Save the file in parent directory
+with open(file_path, 'w') as f:
     json.dump(validation_format_dict2, f, indent=4)

@@ -70,6 +70,10 @@ Highlight cells that do not follow the ##-######-## Medicaid ID format, or a 10-
 =AND(NOT(AND(LEN(F2)=12,ISNUMBER(VALUE(LEFT(F2,2))),MID(F2,3,1)="-",ISNUMBER(VALUE(MID(F2,4,6))),MID(F2,10,1)="-",ISNUMBER(VALUE(RIGHT(F2,2))))),NOT(AND(LEN(F2)=10,ISNUMBER(VALUE(F2)))),AND(ISBLANK(F2),NOT(ISBLANK(G2))))
 ```
 
+### Style Format
+This format will display entered 10 digit numbers as a medicaid id:
+
+`"00-000000-00"`
 
 ## Dates (DATE OF BIRTH, COVERAGE EXPIRATION DATE, DATE OF SERVICE)
 ### Data Validation
@@ -79,7 +83,7 @@ Raise error if any valid non-date value is entered. Valid dates start after 1/1/
 # Expanded format
 =AND(
     ISNUMBER(G1),
-    G1 > DATE(1900, 1, 1)
+    G2 > DATE(1900, 1, 1)
 )
 
 # Copy Paste Format
@@ -107,7 +111,12 @@ Note: this is applied to ranges E2:E10000,G2:G10000,H2:H10000 (DOB, Coverage Exp
 =OR(AND(NOT(ISBLANK(E2)),NOT(ISNUMBER(E2))), AND(ISBLANK(E2),NOT(ISBLANK(F2))))
 ```
 
-## CHECK FOR MULTIPLE CODES
+### Style Formatting
+Ensures that entered dates conform to the following format:
+
+`"MM/DD/YY"`
+
+## CHECK FOR MULTIPLE CODES (CPT/HCPCS/DENTAL CODE)
 
 ### Data Validation
 Raise error if commas, dashes, semicolons, and new line characters to prevent common "list" separators.
@@ -182,10 +191,6 @@ Highlight cells that are not two characters long and not blank.
 =AND(NOT(LEN(J2)=2),NOT(ISBLANK(J2)))
 ```
 
-## BILLED AMOUNT
-### Data Validation
->
-
 ## Contractual Adjustment, Amount Due, Spend Down
 
 ### Data Validation
@@ -244,4 +249,56 @@ Highlight cell if it does not contain a number or if it is empty while the neigh
 # Copy paste format
 =OR(AND(NOT(ISBLANK(Q2)),NOT(ISNUMBER(Q2))),AND(ISBLANK(Q2),NOT(ISBLANK(R2))))
 ```
+
+## Accounting Format
+
+The library used to generate the spreadsheets, `openpyxl`, does not have a builtin accounting format. As a result, it needs to be defind manually and applid to the following cells:
+
+`["BILLED AMOUNT", "GRAND TOTAL", "AMOUNT DUE", "LOCAL SHARE", "FEDERAL SHARE", "SPEND DOWN", "TPL AMOUNT", "CONTRACTUAL ADJUSTMENT"]`
+
+### Formula
+
+```
+# Expanded format
+
+# Formats positive values
+_($* #,##0.00_)
+
+# Formats negative values
+($* (#,##0.00)
+
+# Formats 0s
+($* \"-\"??_)
+
+# Formats text
+_(@_)
+
+
+# Copy Paste
+_($* #,##0.00_);_($* (#,##0.00);_($* \"-\"??_);_(@_)
+```
+
+Although the values entered into these columns should not be negative or text, these format sections are still included to ensure successful insertion into spreadsheet.
+
+For more information on custom number formatting visit this [link.](https://support.microsoft.com/en-us/office/number-format-codes-in-excel-for-mac-5026bbd6-04bc-48cd-bf33-80f18b4eae68)
+
+## Value Formulas
+
+Some columns are calculated based on a formula applied to cells in other columns.
+
+### LOCAL SHARE
+
+17% of amount due is funded by the local government
+
+`=FLOOR($M{row}*0.17,0.01)`
+
+83% of amount due is funded by the federal government
+
+`=FLOOR($M{row}*0.83,0.01)`
+
+The grand total column is the sum of amount due, spend down, tpl amount, and contractual adjustment.
+
+`=SUM(M{row},P{row},Q{row},S{row})`
+
+The row placeholders are needed because of the way `openpyxl` adds formulas to cells. As a formula is applied to a column, `openpyxl` will iteratively fill in the placeholder with the corresponding row.
 

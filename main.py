@@ -34,10 +34,11 @@ inserted_columns = {
     "NOTE": 20
 }
 
-with open("config.json") as f:
-    config_dict = json.load(f)
 
-if __name__ == "__main__":
+with open("config.json") as f:
+    config_dict =  json.load(f)
+
+def main():
 
     """ 
     Creating Excel
@@ -56,14 +57,16 @@ if __name__ == "__main__":
     final_df = export_excel.insert_headers(reformatted_date, inserted_columns)
 
     # Save dataframe to excel file
-    path = export_excel.create_sheet(final_df)
+    # TODO: Add functionality to ingest and use unique file name from other script
+    ex_name = 'python_CTS_example.xlsx'
+    path = export_excel.create_sheet(final_df, file_name=ex_name)
 
     """
     Modifying Excel
     """
 
     # Open up excel file to modify
-    ws_to_modify = modify_excel.CustomSpreadsheet(filepath=path, row_range=1000)
+    ws_to_modify = modify_excel.CustomSpreadsheet(filepath=path, row_range=5000)
 
     # Set the sheet to work on
     ws_to_modify.set_sheet("Sheet1")
@@ -79,8 +82,7 @@ if __name__ == "__main__":
     modify_excel.data_validation_handler(ws_to_modify, config_dict)
 
     # Save the modified Excel file
-    ws_to_modify.workbook.save("modified_output.xlsx")
+    ws_to_modify.workbook.save(path)
+    print(f"\nFormatted excel file saved to {path}")
 
-    # Delete the unformatted Excel file
-    os.remove(path)
- 
+main()

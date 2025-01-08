@@ -314,7 +314,6 @@ def data_validation_handler(workbook: CustomSpreadsheet, validation_format_dict:
         # Style Formatting
         style_format = validation_format_dict[header].get("style_format")
         if style_format is not None:
-            print(style_format)
             workbook.add_style_format(style_format, col)
 
         # Value Formatting
