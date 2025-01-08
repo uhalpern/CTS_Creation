@@ -8,7 +8,6 @@ Description: This module handles the creation of a claims transmittal spreadshee
 
 Author: Urban Halpern
 Date: 2024-12-24
-Version: 0.5
 """
 
 import sqlite3, os
@@ -56,30 +55,6 @@ def transform_header(df: pd.DataFrame, mapping_dict: dict) -> pd.DataFrame:
     return new_headers
 
 
-def format_date(df: pd.DataFrame, column_name: str) -> None:
-    """
-    The DATE var type in SQL has the format YYYY-MM-DD. For the spreadsheet,
-    we want the date to be in the format MM/DD/YY. This function will change
-    the column passed in by the column_name parameter. These transformations
-    will be done in place and will return nothing.
-
-    Args:
-        df (pd.DataFrame): dataframe with date column to format
-        column_name (str): column to format
-    Returns:
-        None: This function modifies the Dataframe in place
-    """
-
-    # Convert columns to datetime
-    df[column_name] = pd.to_datetime(df[column_name])
-
-    # Extract the date property out of the datetime object
-    df[column_name] = df[column_name].dt.date
-    
-
-    return None
-
-
 def format_date_columns(df: pd.DataFrame, column_names_list: list) -> pd.DataFrame:
     """
     The DATE var type in SQL has the format YYYY-MM-DD. For the spreadsheet,
@@ -98,8 +73,9 @@ def format_date_columns(df: pd.DataFrame, column_names_list: list) -> pd.DataFra
 
     # Format each date column in place
     for name in column_names_list:
-        format_date(df, name)
-    
+        # Convert columns to datetime
+        df[name] = pd.to_datetime(df[name])
+
     return df
 
 

@@ -9,14 +9,13 @@ Description: This module handles the implementation of Data Validation and forma
 
 Author: Urban Halpern
 Date: 2024-12-26
-Version: 0.5
 """
 
 import os
 import re
 from datetime import datetime
 from openpyxl import load_workbook
-from openpyxl.styles import PatternFill, Border, Side, Font
+from openpyxl.styles import PatternFill, Border, Side, Font, Alignment
 from openpyxl.worksheet.datavalidation import DataValidation
 from openpyxl.formatting.rule import FormulaRule
 
@@ -56,12 +55,18 @@ class CustomSpreadsheet:
       
 
     # Applies the specified background color to the header row
-    def set_header_style(self, color_code: str = "4472c4", font_size=8, font_family="Calibri"):
+    def set_header_style(self, color_code: str = "4472c4", font_size=8, font_name="Calibri"):
+
+        # Define styles for fill, font, and alignment
         header_fill = PatternFill(start_color=color_code, end_color=color_code, fill_type="solid")
-        fontStyle = Font(size=font_size)
+        fontStyle = Font(size=font_size, name=font_name, bold=True)
+        allign = Alignment(horizontal="center", vertical="center")
+
+        # Apply fonts to cells
         for cell in self.sheet[1]:
             cell.fill = header_fill
             cell.font = fontStyle
+            cell.alignment = allign
 
     # Sets the specified height (in pixels) of the header row
     def set_header_height(self, header_row_height: float = 22.9):
@@ -82,7 +87,7 @@ class CustomSpreadsheet:
         # TODO: Have a max width cut off point for long cell values
 
         for col in self.sheet.columns:
-            max_length = 0
+            max_length = 8 # Set a default width
             column = col[0].column_letter
             
             # Find cell in column with longest value
@@ -115,7 +120,7 @@ class CustomSpreadsheet:
 
         """
 
-        # define fills
+        # Define fills and border style
         fill_one = PatternFill(start_color=first_color, end_color=first_color, fill_type="solid")
         fill_two = PatternFill(start_color=second_color, end_color=second_color, fill_type="solid")
         thin_border = Border(left=Side(style='thin', color='595959'),

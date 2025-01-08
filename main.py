@@ -39,7 +39,7 @@ with open("config.json") as f:
 
 if __name__ == "__main__":
 
-    """
+    """ 
     Creating Excel
     """
 
@@ -49,16 +49,11 @@ if __name__ == "__main__":
 
     # Rename the headers of the dataframe
     renamed_headers = export_excel.transform_header(raw_dataframe, mapping_dict=headers_mapping)
-    #print(renamed_headers.head(4))
-
     # Reformat the date columns
     reformatted_date = export_excel.format_date_columns(renamed_headers, date_columns)
-    dates = reformatted_date[["DATE OF BIRTH", "COVERAGE EXPIRATION DATE", "DATE OF SERVICE"]]
-    #print(dates.head(3))
 
     # Insert columns for user entry
     final_df = export_excel.insert_headers(reformatted_date, inserted_columns)
-    #print(final_df.head(3))
 
     # Save dataframe to excel file
     path = export_excel.create_sheet(final_df)
@@ -74,9 +69,9 @@ if __name__ == "__main__":
     ws_to_modify.set_sheet("Sheet1")
 
     # Style the worksheet
-    ws_to_modify.set_header_style(color_code="4472c4", font_size=8)
+    ws_to_modify.set_header_style(color_code="4472c4", font_size=8, font_name="Quattrocento Sans")
     ws_to_modify.set_header_height(header_row_height=22.9)
-    ws_to_modify.set_column_width(multiplier=1.2)
+    ws_to_modify.set_column_width(multiplier=1.1)
     ws_to_modify.set_alternating_fill()
     ws_to_modify.set_number_of_columns(num_columns=22)
 
