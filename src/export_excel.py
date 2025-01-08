@@ -10,7 +10,8 @@ Author: Urban Halpern
 Date: 2024-12-24
 """
 
-import sqlite3, os
+import sqlite3
+import os
 import pandas as pd
 
 
