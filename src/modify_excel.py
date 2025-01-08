@@ -14,13 +14,11 @@ Version: 0.5
 
 import os
 import re
-import openpyxl.worksheet.datavalidation
-from openpyxl import Workbook, load_workbook
-from openpyxl.formatting import Rule
-from openpyxl.styles import Color, PatternFill, Font, Border, numbers, Side
+from datetime import datetime
+from openpyxl import load_workbook
+from openpyxl.styles import PatternFill, Border, Side, Font
 from openpyxl.worksheet.datavalidation import DataValidation
-from openpyxl.formatting.rule import FormulaRule 
-
+from openpyxl.formatting.rule import FormulaRule
 
 
 class CustomSpreadsheet:
@@ -58,10 +56,12 @@ class CustomSpreadsheet:
       
 
     # Applies the specified background color to the header row
-    def set_header_color(self, color_code: str = "4472c4"):
+    def set_header_style(self, color_code: str = "4472c4", font_size=8, font_family="Calibri"):
         header_fill = PatternFill(start_color=color_code, end_color=color_code, fill_type="solid")
+        fontStyle = Font(size=font_size)
         for cell in self.sheet[1]:
             cell.fill = header_fill
+            cell.font = fontStyle
 
     # Sets the specified height (in pixels) of the header row
     def set_header_height(self, header_row_height: float = 22.9):
@@ -84,10 +84,15 @@ class CustomSpreadsheet:
         for col in self.sheet.columns:
             max_length = 0
             column = col[0].column_letter
-
+            
             # Find cell in column with longest value
             for cell in col:
                 
+                # if cell is datetime column value, truncate value to just consider date
+                if isinstance(cell.value, datetime):
+                    # Retain only the date part
+                    cell.value = cell.value.date()
+
                 # If cell is not empty, check for width
                 if cell.value is not None:
                     # If the current cell is larger than the cell width, increase the max width
@@ -131,23 +136,6 @@ class CustomSpreadsheet:
                 cell.fill = fill
                 cell.border = thin_border
 
-
-    def set_custom_format(self, col_to_format: str, format_str: str):
-        """
-        Sets a spreadsheet column to have a format equivalent to a custom format in Excel
-        Will allow certain columns to automatically convert recognized inputs to format.
-        Unrecognized inputs will be caught by data validation.
-
-        Args:
-            col_to_format (str): column header to apply formatting to
-            format_str (str): format string to apply to column
-        """
-
-        col_letter = self.get_column_letter(col_to_format)
-
-        for cell in self.sheet[col_letter]:
-            cell.number_format = format_str
-
     def set_number_of_columns(self, num_columns: int = 22):
         """
         This method sets the number of columns to display on the spreadsheet. It will
@@ -166,19 +154,30 @@ class CustomSpreadsheet:
             # set column to hidden
             self.sheet.column_dimensions[col_letter].hidden = True
 
-    def add_value_formula(self, col_header: str, value_formula: str):
+    def add_style_format(self, format_str: str, col: str):
+        """
+        Sets a spreadsheet column to have a format equivalent to a custom format in Excel
+        Will allow certain columns to automatically convert recognized inputs to format.
+        Unrecognized inputs will be caught by data validation.
+
+        Args:
+            format_str (str): format string to apply to column
+            col (str): column letter to apply formatting to
+        """
+
+        for cell in self.sheet[col]:
+            cell.number_format = format_str
+
+    def add_value_formula(self, value_formula: str, col: str,):
         """
         Adds a value formula to a specified column in the sheet object. A value formula
         is a formula applied to a cell that calculates the value in that cell.
         Example formula: =FLOOR($M{row}*0.17,0.01)
 
         Args:
-            col_header (str): column header representing the column to add formula to
             value_formula (str): formula to apply to cell
+            col (str): column letter representing the column to add formula to
         """
-
-        col_letter = self.get_column_letter(col_header)
-
         # Check for the '{row}' placeholder using regex
         if not re.search(r"\{row\}", value_formula):
             raise ValueError(f"The provided formula: {value_formula} does not contain a 'row' placeholder.")
@@ -188,7 +187,7 @@ class CustomSpreadsheet:
 
             # Apply the formula to each row in the column.
             # The keyword argument row represents placeholders in the formula string that will be replaced by row_num
-            self.sheet[f'{col_letter}{row_num}'] = value_formula.format(row=row_num)
+            self.sheet[f'{col}{row_num}'] = value_formula.format(row=row_num)
             
     def add_data_validation(self, formula: str,
                             col_to_validate: str,
@@ -210,7 +209,7 @@ class CustomSpreadsheet:
                             showErrorMessage=True)
 
         dv.error = error_message
-        # Apply the validation to range (EX: M1:M1000)
+        # Apply the validation to range (EX: M2:M1000)
         add_str = f'{col_to_validate}2:{col_to_validate}{self.range}'
 
         dv.add(add_str) 
@@ -287,78 +286,33 @@ def data_validation_handler(workbook: CustomSpreadsheet, validation_format_dict:
             None
     """
 
-    # For each header in the validation_format_dict, add the corresponding data validation
+    # For each header in the validation_format_dict, add associated formatting
     for header in validation_format_dict:
 
         # Get the column letter from the header_name
         col = workbook.get_column_letter(header)
       
-        # Add a new data validation rule
-        # Check if key exists
-        try:
-            val_formula = validation_format_dict[header]["val_formula"]
-            error_message = validation_format_dict[header]["error_msg"]
-        except KeyError:
-            val_formula = None
-            error_message = None
+        # For each of the following:
+        # Check if key exists and add associated format to column
 
-        # Add data validation rule to sheet
-        if val_formula is not None:
-            workbook.add_data_validation(val_formula, col, error_message=error_message)
+        # Data Validation
+        validation = validation_format_dict[header].get("data_validation")
+        error_message = validation_format_dict[header].get("error_msg")
+        if validation is not None:
+            workbook.add_data_validation(validation, col, error_message=error_message)
 
-        # Create a new conditional formatting rule
-        # Check if key exists
-        try:
-            format_formula = validation_format_dict[header]["format_formula"]
-        except KeyError:
-            format_formula = None
+        # Conditional Formatting
+        conditional_format_formula = validation_format_dict[header].get("conditional_format_formula")
+        if conditional_format_formula is not None:
+            workbook.add_conditional_formatting(conditional_format_formula, col)
 
-        # Add conditional formatting rule to sheet
-        if format_formula is not None:
-            workbook.add_conditional_formatting(format_formula, col)
+        # Style Formatting
+        style_format = validation_format_dict[header].get("style_format")
+        if style_format is not None:
+            print(style_format)
+            workbook.add_style_format(style_format, col)
 
-def style_handler(workbook: CustomSpreadsheet):
-
-    workbook.set_header_color(color_code="4472c4")
-    workbook.set_header_height(header_row_height=22.9)
-    workbook.set_column_width(multiplier=1.2)
-    workbook.set_alternating_fill()
-    workbook.set_number_of_columns(num_columns=22)
-
-    """
-    1) 
-        _($ - adds space to align currency symbols
-        *   - makes currency symbol align to the left
-        #,##0.00 - number format for thousand separators and two decimal places
-    2)
-        _($* "-"??_) - replaces 0 values with dash
-    3)
-        _(@_) - aligns text
-
-    """
-    accounting_format = '_($* #,##0.00_);_($* (#,##0.00);_($* "-"??_);_(@_)'  
-
-    # Format string for medicaid id column
-    medicaid_id_format = '00-000000-00'
-
-    monetary_cols = ['BILLED AMOUNT', 'GRAND TOTAL', 'AMOUNT DUE', 
-                     'LOCAL SHARE', 'FEDERAL SHARE', 'SPEND DOWN', 
-                     'TPL AMOUNT']
-
-    for col in monetary_cols:
-        workbook.set_custom_format(col, accounting_format)
-
-    workbook.set_custom_format("MEDICAID ID", medicaid_id_format)
-
-
-    grand_total_formula = "=SUM(M{row},P{row},Q{row},S{row})"
-    local_share_formula = "=FLOOR($M{row}*0.17,0.01)"
-    federal_share_formula = "=FLOOR($M{row}*0.83,0.01)"
-
-        # grand_total_col = self.get_column_letter("GRAND TOTAL")
-        # local_share_col = self.get_column_letter("LOCAL SHARE")
-        # federal_share_col = self.get_column_letter("FEDERAL SHARE")
-
-    workbook.add_value_formula("GRAND TOTAL", grand_total_formula)
-    workbook.add_value_formula("LOCAL SHARE", local_share_formula)
-    workbook.add_value_formula("FEDERAL SHARE", federal_share_formula)
+        # Value Formatting
+        value_formula = validation_format_dict[header].get("value_formula")
+        if value_formula is not None:
+            workbook.add_value_formula(value_formula, col)

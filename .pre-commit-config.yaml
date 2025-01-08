@@ -1,9 +1,0 @@
-repos:
-  - repo: local
-    hooks:
-      - id: pytest
-        name: pytest
-        stages: [pre-commit]
-        language: system
-        entry: pipenv run pytest tests
-        types: [python]

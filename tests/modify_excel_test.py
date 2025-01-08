@@ -31,15 +31,15 @@ class TestExcelModification:
 
         test_val_dict = {
             "date_column": {
-                "val_formula": "=AND(ISNUMBER(H1), H1 > DATE(1900, 1, 1))",
+                "data_validation": "=AND(ISNUMBER(H1), H1 > DATE(1900, 1, 1))",
                 "error_msg": "Invalid Date Format - Enter date as MM/DD/YYYY",
-                "format_formula": "=AND(ISNUMBER(H1), H1 > DATE(1900, 1, 1))"
+                "conditional_format_formula": "=AND(ISNUMBER(H1), H1 > DATE(1900, 1, 1))"
             }
         }
 
         test_incorrect_val = {
             "missing_column": {
-                "val_formula": "=AND(ISNUMBER(H1), H1 > DATE(1900, 1, 1))",
+                "data_validation": "=AND(ISNUMBER(H1), H1 > DATE(1900, 1, 1))",
                 "error_msg": "Invalid Date Format - Enter date as MM/DD/YYYY"
             }
         }
@@ -81,7 +81,7 @@ class TestExcelModification:
         
         # Test error handling of passing in a formula without the correct placeholders
         with pytest.raises(ValueError):
-           self.spreadsheet.add_value_formula(col_header="value", value_formula=value_formula)
+           self.spreadsheet.add_value_formula(value_formula=value_formula, col="value")
 
     def test_delete(self):
         # Delete the unformatted Excel file

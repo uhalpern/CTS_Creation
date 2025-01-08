@@ -11,9 +11,9 @@ Date: 2024-12-24
 Version: 0.5
 """
 
+import sqlite3, os
 import pandas as pd
-import sqlite3
-import os
+
 
 
 def create_dataframe(connection_string: str) -> pd.DataFrame:
@@ -71,11 +71,11 @@ def format_date(df: pd.DataFrame, column_name: str) -> None:
     """
 
     # Convert columns to datetime
-    print(df.head(3))
-    print(column_name)
     df[column_name] = pd.to_datetime(df[column_name])
-    # convert datetime objects back to string with specified format
-    df[column_name] = df[column_name].dt.strftime('%m/%d/%y')
+
+    # Extract the date property out of the datetime object
+    df[column_name] = df[column_name].dt.date
+    
 
     return None
 
@@ -124,10 +124,8 @@ def insert_headers(df: pd.DataFrame, columns_to_insert: dict) -> pd.DataFrame:
     return columns_inserted
 
 
-
-
-
-def create_sheet(final_df: pd.DataFrame, sheet_name: str = "Sheet1",  file_name: str = "output.xlsx", file_path = ".\\generated_sheets") -> None:
+def create_sheet(final_df: pd.DataFrame, sheet_name: str = "Sheet1",  
+                 file_name: str = "output.xlsx", file_path = ".\\generated_sheets") -> None:
     """
     Saves the dataframe to an Excel file using the openpyxl engine. The Excel file
     name should be unique to not conflict with other generated Excel files. The function
