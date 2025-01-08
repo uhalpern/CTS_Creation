@@ -277,7 +277,7 @@ class CustomSpreadsheet:
             raise ValueError(f'Specified Column: {column_name} not found in sheet.')
 
 
-def data_validation_handler(workbook: CustomSpreadsheet, validation_format_dict: dict) -> None:
+def formatting_handler(workbook: CustomSpreadsheet, validation_format_dict: dict) -> None:
     """
         This will ingest all of the data validation and conditional formatting
         definitions for each of the columns into a CustomSpreadsheet object.

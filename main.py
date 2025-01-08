@@ -1,9 +1,6 @@
 import json
 from src import export_excel, modify_excel
 
-
-
-
 headers_mapping = {
     "control_account_number": "CONTROL/ACCOUNT #",
     "last_name": "LAST NAME",
@@ -34,7 +31,6 @@ inserted_columns = {
     "ADJUSTMENT REASON": 19, 
     "NOTE": 20
 }
-
 
 with open("config.json") as f:
     config_dict =  json.load(f)
@@ -79,8 +75,8 @@ def main():
     ws_to_modify.set_alternating_fill()
     ws_to_modify.set_number_of_columns(num_columns=22)
 
-    # Add data validation rules to the worksheet
-    modify_excel.data_validation_handler(ws_to_modify, config_dict)
+    # Add formatting and data validation to spreadsheet using the configuration dictionary
+    modify_excel.formatting_handler(ws_to_modify, config_dict)
 
     # Save the modified Excel file
     ws_to_modify.workbook.save(path)
