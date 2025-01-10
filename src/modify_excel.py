@@ -145,7 +145,7 @@ class CustomSpreadsheet:
         """
         This method sets the number of columns to display on the spreadsheet. It will
         hide every column past the num_columns specified. It will have to iterate all
-        the way up to the max column for Excel spreadsheets: 16285
+        the way up to the max column for Excel spreadsheets: 16385
 
         Args:
             num_columns (int): number of columns to display

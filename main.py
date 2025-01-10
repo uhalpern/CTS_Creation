@@ -55,17 +55,20 @@ def main(excel_file_name: str):
     # Insert columns for user entry
     final_df = export_excel.insert_headers(reformatted_date, inserted_columns)
 
+    # Get number of samples from query
+    num_rows = final_df.shape[0]
+
     # Save dataframe to excel file
     # TODO: Add functionality to ingest and use unique file name from other script
     ex_name = 'python_CTS_example.xlsx'
-    path = export_excel.create_sheet(final_df, file_name=ex_name)
+    path = export_excel.create_sheet(final_df, file_name=excel_file_name)
 
     """
     Modifying Excel
     """
 
     # Open up excel file to modify
-    ws_to_modify = modify_excel.CustomSpreadsheet(filepath=path, row_range=5000)
+    ws_to_modify = modify_excel.CustomSpreadsheet(filepath=path, row_range=num_rows+50) # Dynamically define row_range to match query size + 50 extra
 
     # Set the sheet to work on
     ws_to_modify.set_sheet("Sheet1")
@@ -87,7 +90,7 @@ def main(excel_file_name: str):
 if __name__ == "__main__":
 
     # Create defualt file name based on current datetime
-    default_file_name = datetime.datetime.now().strftime("%m/%d/%Y_%H:%M:%S")
+    default_file_name = datetime.datetime.now().strftime("%m-%d-%Y_%H-%M-%S")
 
     # Define parser and arguments
     parser = argparse.ArgumentParser(prog="main.py")
@@ -95,11 +98,11 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    # Used defined command line name if defined, else use default
+    # Use defined command line name if defined, else use default
     if args.name:
         file_name = args.name
     else:
-        file_name = default_file_name
+        file_name = default_file_name + ".xlsx"
 
     print(args)
 
