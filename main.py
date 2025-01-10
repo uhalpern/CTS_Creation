@@ -1,4 +1,6 @@
 import json
+import argparse
+import datetime
 from src import export_excel, modify_excel
 
 headers_mapping = {
@@ -35,7 +37,7 @@ inserted_columns = {
 with open("config.json") as f:
     config_dict =  json.load(f)
 
-def main():
+def main(excel_file_name: str):
 
     """ 
     Creating Excel
@@ -82,4 +84,25 @@ def main():
     ws_to_modify.workbook.save(path)
     print(f"\nFormatted excel file saved to {path}")
 
-main()
+if __name__ == "__main__":
+
+    # Create defualt file name based on current datetime
+    default_file_name = datetime.datetime.now().strftime("%m/%d/%Y_%H:%M:%S")
+
+    # Define parser and arguments
+    parser = argparse.ArgumentParser(prog="main.py")
+    parser.add_argument("-n", "--name", type=str, help="Specify name of the excel file", required=False)
+
+    args = parser.parse_args()
+
+    # Used defined command line name if defined, else use default
+    if args.name:
+        file_name = args.name
+    else:
+        file_name = default_file_name
+
+    print(args)
+
+    main(file_name)
+
+
