@@ -45,7 +45,7 @@ class TestExcelModification:
         }
 
         # Add data validation rules to the worksheet
-        modify_excel.data_validation_handler(self.spreadsheet, test_val_dict)
+        modify_excel.formatting_handler(self.spreadsheet, test_val_dict)
 
         try:
             # Assert the data validation was added
@@ -72,7 +72,7 @@ class TestExcelModification:
 
         # Test error handling for adding validaiton to missing column
         with pytest.raises(ValueError):
-            modify_excel.data_validation_handler(self.spreadsheet, test_incorrect_val)
+            modify_excel.formatting_handler(self.spreadsheet, test_incorrect_val)
 
 
     def test_add_value_formula(self):
@@ -82,6 +82,15 @@ class TestExcelModification:
         # Test error handling of passing in a formula without the correct placeholders
         with pytest.raises(ValueError):
            self.spreadsheet.add_value_formula(value_formula=value_formula, col="value")
+
+    
+    def test_add_protection(self):
+        
+        unprotected = ["value"]
+        modify_excel.protection_handler(self.spreadsheet, unprotected, password="test")
+
+        assert self.spreadsheet.sheet["A2"].protection.locked is True
+        assert self.spreadsheet.sheet["B2"].protection.locked is False
 
     def test_delete(self):
         # Delete the unformatted Excel file
