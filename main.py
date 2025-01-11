@@ -3,6 +3,7 @@ import argparse
 import datetime
 from src import export_excel, modify_excel
 
+# Transforms SQL table var names to Excel Header Names
 headers_mapping = {
     "control_account_number": "CONTROL/ACCOUNT #",
     "last_name": "LAST NAME",
@@ -20,10 +21,12 @@ headers_mapping = {
     "tpl": "TPL"
 }
 
+# Used to convert date columns to have datetime objects recognized by Excel
 date_columns = [
     "DATE OF BIRTH", "COVERAGE EXPIRATION DATE", "DATE OF SERVICE"
 ]
 
+# Columns to insert and their insertion position
 inserted_columns = {
     "GRAND TOTAL": 11, 
     "AMOUNT DUE": 12, 
@@ -34,10 +37,12 @@ inserted_columns = {
     "NOTE": 20
 }
 
+# Columns to unprotect
 unprotected_columns = [
     "AMOUNT DUE", "SPEND DOWN", "CONTRACTUAL ADJUSTMENT", "ADJUSTMENT REASON", "NOTE"
                        ]
 
+# Loading configuration file with formatting for each column
 with open("config.json") as f:
     config_dict =  json.load(f)
 
@@ -63,8 +68,7 @@ def main(excel_file_name: str):
     num_rows = final_df.shape[0]
 
     # Save dataframe to excel file
-    # TODO: Add functionality to ingest and use unique file name from other script
-    ex_name = 'python_CTS_example.xlsx'
+    # ex_name = 'python_CTS_example.xlsx'
     path = export_excel.create_sheet(final_df, file_name=excel_file_name)
 
     """
@@ -109,9 +113,11 @@ if __name__ == "__main__":
     # Use defined command line name if defined, else use default
     if args.name:
         file_name = args.name
+
+        # Raise error if file name foes not have .xlsx handle
+        if not file_name.endswith(".xlsx"):
+            raise ValueError(f"Specified name: '{file_name}' is not formatted correctly. Filename should end with '.xlsx'")
     else:
         file_name = default_file_name + ".xlsx"
-
-    print(args)
 
     main(file_name)
