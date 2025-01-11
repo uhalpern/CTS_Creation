@@ -15,7 +15,7 @@ import os
 import re
 from datetime import datetime
 from openpyxl import load_workbook
-from openpyxl.styles import PatternFill, Border, Side, Font, Alignment
+from openpyxl.styles import PatternFill, Border, Side, Font, Alignment, Protection
 from openpyxl.worksheet.datavalidation import DataValidation
 from openpyxl.formatting.rule import FormulaRule
 
@@ -158,6 +158,21 @@ class CustomSpreadsheet:
 
             # set column to hidden
             self.sheet.column_dimensions[col_letter].hidden = True
+    
+    def lock_column(self, column_to_unlock: str):
+        """
+        This method unlocks the cells in a column to allow user entry
+        assuming the sheet was already set to protection mode.
+        The header cell will remain locked for each column.
+
+        Args:
+            column_to_unlock (str): letter of the column to unlock
+        """
+
+        # iterate through cells in the column, skipping the header cell
+        for cell in self.sheet[column_to_unlock][1:]:
+            cell.protection = Protection(locked=False)  # Unlock the cell
+
 
     def add_style_format(self, format_str: str, col: str):
         """
@@ -172,6 +187,7 @@ class CustomSpreadsheet:
 
         for cell in self.sheet[col]:
             cell.number_format = format_str
+
 
     def add_value_formula(self, value_formula: str, col: str,):
         """
@@ -211,7 +227,8 @@ class CustomSpreadsheet:
         # Define a data validation object
         dv = DataValidation(type="custom",
                             formula1=formula,
-                            showErrorMessage=True)
+                            showErrorMessage=True,
+                            allow_blank=True) # Allow users to delete cells with datavalidation
 
         dv.error = error_message
         # Apply the validation to range (EX: M2:M1000)
@@ -283,7 +300,7 @@ def formatting_handler(workbook: CustomSpreadsheet, validation_format_dict: dict
         definitions for each of the columns into a CustomSpreadsheet object.
 
         Args:
-            workbook (CustomSpreadsheet): The workbook to add the data validation rules to
+            workbook (CustomSpreadsheet): The workbook to add the data validation rules and conditional formatting to
             validation__format dict (dict): Holds the defined data validation and conditional formatting rules for each column.
                                             {header_name: {validation_params}}
 
@@ -320,3 +337,25 @@ def formatting_handler(workbook: CustomSpreadsheet, validation_format_dict: dict
         value_formula = validation_format_dict[header].get("value_formula")
         if value_formula is not None:
             workbook.add_value_formula(value_formula, col)
+
+
+def protection_handler(workbook: CustomSpreadsheet, cols_to_unprotect: list, password: str = "test") -> None:
+    """
+        Un-protects columns that do not need protection
+
+        Args:
+            workbook (CustomSpreadsheet): The workbook with columns to unprotect
+            cols_to_unprotect (list): List of column headers to unprotect
+
+        Returns:
+            None
+    """
+
+    # Protect all cells and set password
+    workbook.sheet.protection.enable()
+    workbook.sheet.protection.password = password
+
+    for column in cols_to_unprotect:
+        col_letter = workbook.get_column_letter(column)
+
+        workbook.lock_column(col_letter)

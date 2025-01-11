@@ -32,6 +32,10 @@ inserted_columns = {
     "NOTE": 20
 }
 
+unprotected_columns = [
+    "AMOUNT DUE", "SPEND DOWN", "CONTRACTUAL ADJUSTMENT", "ADJUSTMENT REASON", "NOTE"
+                       ]
+
 with open("config.json") as f:
     config_dict =  json.load(f)
 
@@ -63,7 +67,7 @@ def main():
     """
 
     # Open up excel file to modify
-    ws_to_modify = modify_excel.CustomSpreadsheet(filepath=path, row_range=5000)
+    ws_to_modify = modify_excel.CustomSpreadsheet(filepath=path, row_range=50)
 
     # Set the sheet to work on
     ws_to_modify.set_sheet("Sheet1")
@@ -78,6 +82,10 @@ def main():
     # Add formatting and data validation to spreadsheet using the configuration dictionary
     modify_excel.formatting_handler(ws_to_modify, config_dict)
 
+    # Set password protection for columns
+    password = "test"
+    modify_excel.protection_handler(ws_to_modify, cols_to_unprotect=unprotected_columns, password=password)
+    
     # Save the modified Excel file
     ws_to_modify.workbook.save(path)
     print(f"\nFormatted excel file saved to {path}")
