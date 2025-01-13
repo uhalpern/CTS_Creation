@@ -62,7 +62,7 @@ class CustomSpreadsheet:
         fontStyle = Font(size=font_size, name=font_name, bold=True)
         allign = Alignment(horizontal="center", vertical="center")
 
-        # Apply fonts to cells
+        # Apply styles to cells
         for cell in self.sheet[1]:
             cell.fill = header_fill
             cell.font = fontStyle
@@ -70,7 +70,7 @@ class CustomSpreadsheet:
 
     # Sets the specified height (in pixels) of the header row
     def set_header_height(self, header_row_height: float = 22.9):
-       self.sheet.row_dimensions[1].height = header_row_height
+        self.sheet.row_dimensions[1].height = header_row_height
 
     def set_column_width(self, multiplier: float = 1.2):
         """

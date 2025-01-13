@@ -57,5 +57,13 @@ The configuration and fake data is already created for the example spreadsheet. 
     ```bash
     python main.py
     ```
+    Specify Filename (Optional)
+    ```bash
+    python main.py -n "filename.xlsx"
+    ```
+
+## Contributing
+
+
 
 
