@@ -69,35 +69,37 @@ def main(excel_file_name: str):
 
     # Save dataframe to excel file
     # ex_name = 'python_CTS_example.xlsx'
-    path = export_excel.create_sheet(final_df, file_name=excel_file_name)
+    # path = export_excel.create_sheet(final_df, file_name=excel_file_name)
 
-    """
-    Modifying Excel
-    """
+    export_excel.insert_into_template(final_df)
 
-    # Open up excel file to modify
-    ws_to_modify = modify_excel.CustomSpreadsheet(filepath=path, row_range=num_rows+50) # Dynamically define row_range to match query size + 50 extra
+    # """
+    # Modifying Excel
+    # """
 
-    # Set the sheet to work on
-    ws_to_modify.set_sheet("Sheet1")
+    # # Open up excel file to modify
+    # ws_to_modify = modify_excel.CustomSpreadsheet(filepath=path, row_range=num_rows+50) # Dynamically define row_range to match query size + 50 extra
 
-    # Style the worksheet
-    ws_to_modify.set_header_style(color_code="4472c4", font_size=8, font_name="Quattrocento Sans")
-    ws_to_modify.set_header_height(header_row_height=22.9)
-    ws_to_modify.set_column_width(multiplier=1.1)
-    ws_to_modify.set_alternating_fill()
-    ws_to_modify.set_number_of_columns(num_columns=22)
+    # # Set the sheet to work on
+    # ws_to_modify.set_sheet("Sheet1")
 
-    # Add formatting and data validation to spreadsheet using the configuration dictionary
-    modify_excel.formatting_handler(ws_to_modify, config_dict)
+    # # Style the worksheet
+    # ws_to_modify.set_header_style(color_code="4472c4", font_size=8, font_name="Quattrocento Sans")
+    # ws_to_modify.set_header_height(header_row_height=22.9)
+    # ws_to_modify.set_column_width(multiplier=1.1)
+    # ws_to_modify.set_alternating_fill()
+    # ws_to_modify.set_number_of_columns(num_columns=22)
 
-    # Set password protection for columns
-    password = "test"
-    modify_excel.protection_handler(ws_to_modify, cols_to_unprotect=unprotected_columns, password=password)
+    # # Add formatting and data validation to spreadsheet using the configuration dictionary
+    # modify_excel.formatting_handler(ws_to_modify, config_dict)
+
+    # # Set password protection for columns
+    # password = "test"
+    # modify_excel.protection_handler(ws_to_modify, cols_to_unprotect=unprotected_columns, password=password)
     
-    # Save the modified Excel file
-    ws_to_modify.workbook.save(path)
-    print(f"\nFormatted excel file saved to {path}")
+    # # Save the modified Excel file
+    # ws_to_modify.workbook.save(path)
+    # print(f"\nFormatted excel file saved to {path}")
 
 if __name__ == "__main__":
 

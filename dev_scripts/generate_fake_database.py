@@ -1,12 +1,13 @@
 import sqlite3
 import os
 
-# Create a connection to a local SQLite database file
-connection = sqlite3.connect("data/medical_data.db")  # This will create 'medical_services.db' in your working directory
-cursor = connection.cursor()
-
 # check if table already exists
 if not os.path.exists("data/medical_data.db"):
+
+    # Create a connection to a local SQLite database file
+    connection = sqlite3.connect("data/medical_data.db")  # This will create 'medical_services.db' in working directory 
+    cursor = connection.cursor()
+
     # Create the table
     cursor.execute('''
     CREATE TABLE medical_data (
@@ -33,6 +34,16 @@ if not os.path.exists("data/medical_data.db"):
         ('0987654321', 'Doe', 'Jane', 'B', '1975-05-15', 'MED654321', '2024-11-30', '2024-06-20', 'C4567', 'MOD2', 200.23, 75.00, 30.00, 'Medicare'),
         ('5678901234', 'Brown', 'Michael', 'C', '1990-09-20', 'MED789012', '2025-01-15', '2024-06-25', 'H7890', 'MOD3', 300.47, 100.00, 40.00, 'None')
     ]
+
+    data2 = [
+        ('12345A', 'Doe', 'John', 'H', '2001-06-09', '13-015294-00', '2024-05-10', '2024-03-08', '10120', '', 132.79, 0.00, 0.00, ''),
+        ('3938743', 'Du Bois', 'Harry', '', '1980-12-15', '13-002648-00', '2024-04-01', '2024-02-12', 'A4649', '', 77.90, 0.00, 0.00, ''),
+        ('3938743', 'Du Bois', 'Harry', '', '1980-12-15', '13-002648-00', '2024-04-01', '2024-02-13', 'A4928', '', 91.89, 0.00, 0.00, ''),
+        ('18393A', 'Kitsuragi', 'Kim', 'Kimball', '1985-08-26', '13-023421-00', '2024-06-23', '2024-02-12', '96116', '', 80.00, 0.00, 0.00, ''),
+        ('18393A', 'Kitsuragi', 'Kim', 'Kimball', '1985-08-26', '13-023421-00', '2024-06-23', '2024-02-12', '96312', '', 90.20, 0.00, 0.00, ''),
+        ('93649A', 'Jordan', 'Michael', 'B', '1987-02-09', '14-093843-00', '2024-07-02', '2024-05-05', 'V2799', '', 30.00, 0.00, 0.00, ''),
+    ]
+
     cursor.executemany("INSERT INTO medical_data VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", data)
 
     # Save and close
@@ -41,5 +52,5 @@ if not os.path.exists("data/medical_data.db"):
 
 else:
     print("SQLite database already exists")
-connection.close()
 
+connection.close()
