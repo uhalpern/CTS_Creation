@@ -1,12 +1,13 @@
 import sqlite3
 import os
 
-# Create a connection to a local SQLite database file
-connection = sqlite3.connect("data/medical_data.db")  # This will create 'medical_services.db' in your working directory
-cursor = connection.cursor()
-
 # check if table already exists
 if not os.path.exists("data/medical_data.db"):
+
+    # Create a connection to a local SQLite database file
+    connection = sqlite3.connect("data/medical_data.db")  # This will create 'medical_services.db' in your working directory
+    cursor = connection.cursor()
+
     # Create the table
     cursor.execute('''
     CREATE TABLE medical_data (
@@ -33,6 +34,9 @@ if not os.path.exists("data/medical_data.db"):
         ('0987654321', 'Doe', 'Jane', 'B', '1975-05-15', 'MED654321', '2024-11-30', '2024-06-20', 'C4567', 'MOD2', 200.23, 75.00, 30.00, 'Medicare'),
         ('5678901234', 'Brown', 'Michael', 'C', '1990-09-20', 'MED789012', '2025-01-15', '2024-06-25', 'H7890', 'MOD3', 300.47, 100.00, 40.00, 'None')
     ]
+
+    data = data * 100
+    
     cursor.executemany("INSERT INTO medical_data VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", data)
 
     # Save and close

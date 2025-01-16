@@ -159,7 +159,7 @@ class CustomSpreadsheet:
             # set column to hidden
             self.sheet.column_dimensions[col_letter].hidden = True
     
-    def lock_column(self, column_to_unlock: str):
+    def unlock_column(self, column_to_unlock: str):
         """
         This method unlocks the cells in a column to allow user entry
         assuming the sheet was already set to protection mode.
@@ -170,7 +170,7 @@ class CustomSpreadsheet:
         """
 
         # iterate through cells in the column, skipping the header cell
-        for cell in self.sheet[column_to_unlock][1:]:
+        for cell in self.sheet[column_to_unlock][1:self.range]:
             cell.protection = Protection(locked=False)  # Unlock the cell
 
 
@@ -358,4 +358,4 @@ def protection_handler(workbook: CustomSpreadsheet, cols_to_unprotect: list, pas
     for column in cols_to_unprotect:
         col_letter = workbook.get_column_letter(column)
 
-        workbook.lock_column(col_letter)
+        workbook.unlock_column(col_letter)

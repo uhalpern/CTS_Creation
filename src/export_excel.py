@@ -10,16 +10,14 @@ Author: Urban Halpern
 Date: 2024-12-24
 """
 
-import sqlite3
 import os
-import openpyxl.cell
+import sqlite3
 import openpyxl.workbook
-import openpyxl.worksheet
-import openpyxl.worksheet.worksheet
 import pandas as pd
 import openpyxl
 from openpyxl import load_workbook
-
+from openpyxl.utils.dataframe import dataframe_to_rows
+from openpyxl.styles import Protection
 
 
 def create_dataframe(connection_string: str) -> pd.DataFrame:
@@ -182,7 +180,8 @@ def get_format(sheet: openpyxl.worksheet.worksheet, cell: openpyxl.cell.cell.Cel
 
     # Get the columns header from the sheet
     column_letter = cell.column_letter
-    header = sheet[f"{column_letter}1"]
+    header_cell = sheet[f"{column_letter}1"]
+    header = header_cell.value
 
     # Look for the header in the validation_format_dict
     format_rules = validation_format_dict.get(header)
@@ -195,7 +194,7 @@ def get_format(sheet: openpyxl.worksheet.worksheet, cell: openpyxl.cell.cell.Cel
             cell.number_format = style_format
 
 
-def insert_into_template(final_df: pd.DataFrame, validation_format_dict: dict, workbook_name: str = "CTS_Insert_Example.xlsx"):
+def insert_into_template(final_df: pd.DataFrame, validation_format_dict: dict) -> openpyxl.workbook.workbook.Workbook:
     """
     Inserts data into the template spreadsheet using data from the final_df row by row
 
@@ -204,13 +203,127 @@ def insert_into_template(final_df: pd.DataFrame, validation_format_dict: dict, w
         validation_format_dict (dict): dictionary that holds formatting for each column
         workbook_name (str): name of workbook that will be saved after data is ingested
 
+    Returns:
+        workbook (openpyxl.workbook.workbook.Workbook): workbook with ingested data
+
     """
 
+    # Get parent dir of repo to access generated_sheets dir
+    parent_dir = os.path.abspath(os.path.join(os.getcwd()))
+
+    # Access the template file
+    template_file_path = os.path.join(parent_dir, 'CTS_Example_Template.xlsx')
+
+    workbook = load_workbook(template_file_path)
+    sheet = workbook["MAP or COFA"]
+
+    # insert dataframe rows
+    for dataframe_row in dataframe_to_rows(final_df, index=True, header=False):
+        
+        # bypass openpyxl dataframe_to_rows first returned element: None ([None])
+        if dataframe_row[0] is not None:
+
+            # Excel sheet indices are 1-based and we want to skip the header row
+            sheet_index = dataframe_row[0] + 2
+
+            # Get the sheetrow at the specified index and only include 20 columns (length of dataframe)
+            sheet_row = next(sheet.iter_rows(min_row=sheet_index, max_row=sheet_index, min_col=1, max_col=20))
+            process_row(sheet, dataframe_row, sheet_row, validation_format_dict)
+
+    return workbook
+
+
+def save_workbook(workbook: openpyxl.workbook.Workbook, workbook_name: str = "CTS_Insert_Example") -> None:
+    """
+    Saves the workbook to the specified path and checks if file already exists
+
+    Args:
+        workbook (openpyxl.workbook.Workbook): The workbook object to save
+
+    """
+    # Get parent dir of repo to access generated_sheets dir
     parent_dir = os.path.abspath(os.path.join(os.getcwd()))
     sheets_directory = os.path.join(parent_dir, 'generated_sheets')
 
-    template_file_path = os.path.join(parent_dir, 'CTS_Example_Template')
+    # Define path to save workbook
+    save_path = os.path.join(sheets_directory, workbook_name)
+    if os.path.exists(save_path):
+        raise FileExistsError(f'The file already exists: {save_path}')
 
-    workbook = load_workbook()
+    workbook.save(save_path)
+    print(f'Sheet saved to {workbook_name} at {save_path}') 
 
-    pass
+    return save_path
+
+
+def protection_handler(workbook: openpyxl.workbook.Workbook, cols_to_unprotect: list, 
+                       password: str = "test", row_range: int = 50) -> None:
+    """
+    Un-protects columns that do not need protection
+
+    Args:
+        workbook (openpyxl.workbook.Workbook): The workbook with columns to unprotect
+        cols_to_unprotect (list): List of column headers to unprotect
+        password (str): password to unlock the sheet
+        range (int): range of cells in column to unprotect
+
+    Returns:
+        None
+    """
+
+    # Protect all cells and set password
+    sheet = workbook["MAP or COFA"]
+    sheet.protection.enable()
+    sheet.protection.password = password
+
+    for column in cols_to_unprotect:
+        col_letter = get_column_letter(sheet, column)
+
+        unlock_column(sheet, col_letter, row_range)
+
+
+def get_column_letter(sheet: openpyxl.worksheet.worksheet.Worksheet, column_name: str) -> str:
+    """
+    Helper function to find the column letter from a specified column_name. If no matching
+    header is found, will return None.
+
+    Args:
+        sheet (openpyxl.worksheet.worksheet.Worksheet): worksheet object to extract column letter from
+        column_name (str): column name to extract header from
+
+    Returns:
+        column_letter (str): column letter associated with header.
+    """
+
+    column_letter = None
+
+    # Iterate through all of the columns in the spreadsheet returning cells only up to row 2 for each column
+    for col in sheet.iter_cols(max_row=2):
+
+        # Extract the first row cell
+        header_cell = col[0]
+       
+        # If header cell name found, return column letter
+        if header_cell.value == column_name:
+            return header_cell.column_letter
+   
+    # Raise error if the column was not found in the sheet.
+    if column_letter is None:
+        raise ValueError(f'Specified Column: {column_name} not found in sheet.')
+
+
+def unlock_column(sheet: openpyxl.worksheet.worksheet.Worksheet, column_to_unlock: str, row_range: int):
+        """
+        This method unlocks the cells in a column to allow user entry
+        assuming the sheet was already set to protection mode.
+        The header cell will remain locked for each column.
+
+        Args:
+            sheet (openpyxl.worksheet.worksheet.Worksheet): sheet to unlock columns in
+            column_to_unlock (str): letter of the column to unlock
+            range (int): Range of cells to unlock
+        """
+
+        # iterate through cells in the column, skipping the header cell
+        for cell in sheet[column_to_unlock][1:row_range]:
+            cell.protection = Protection(locked=False)  # Unlock the cell
