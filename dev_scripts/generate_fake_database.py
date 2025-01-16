@@ -43,7 +43,7 @@ if not os.path.exists(database_path):
         ('5678901234', 'Brown', 'Michael', 'C', '1990-09-20', 'MED789012', '2025-01-15', '2024-06-25', 'H7890', 'MOD3', 300.47, 100.00, 40.00, 'None')
     ]
 
-    data = data * 100
+    data = data * 10
     
     cursor.executemany("INSERT INTO medical_data VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", data)
 

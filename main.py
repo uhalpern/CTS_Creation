@@ -29,8 +29,8 @@ date_columns = [
 # Columns to insert and their insertion position
 inserted_columns = {
     "GRAND TOTAL": 11, 
-    "AMOUNT DUE": 12, 
-    "LOCAL SHARE": 13, 
+    "AMOUNT DUE": 13, 
+    "LOCAL SHARE": 12, 
     "FEDERAL SHARE": 14, 
     "CONTRACTUAL ADJUSTMENT": 18, 
     "ADJUSTMENT REASON": 19, 

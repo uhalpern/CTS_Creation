@@ -141,7 +141,7 @@ def create_sheet(final_df: pd.DataFrame, sheet_name: str = "Sheet1",
 
 
 def get_format(sheet: openpyxl.worksheet.worksheet, cell: openpyxl.cell.cell.Cell,
-               validation_format_dict: dict) -> None:
+               validation_format_dict: dict, header: str) -> None:
     """
     Returns the format string of a cell from the validation_format_dict
 
@@ -149,13 +149,14 @@ def get_format(sheet: openpyxl.worksheet.worksheet, cell: openpyxl.cell.cell.Cel
         sheet: (openpyxl.worksheet.worksheet): spreadsheet object for accessing header cell
         cell (openpyxl.cell.cell.Cell): cell to get formatting for
         validation_format_dict (dict): dictionary that holds formatting for each column
+        header (str): header name to lookup in validation_format_dict
 
     """
 
-    # Get the columns header from the sheet
-    column_letter = cell.column_letter
-    header_cell = sheet[f"{column_letter}1"]
-    header = header_cell.value
+    # # Get the columns header from the sheet
+    # column_letter = cell.column_letter
+    # header_cell = sheet[f"{column_letter}1"]
+    # header = header_cell.value
 
     # Look for the header in the validation_format_dict
     format_rules = validation_format_dict.get(header)
@@ -197,19 +198,23 @@ def insert_into_template(final_df: pd.DataFrame, validation_format_dict: dict) -
     workbook = load_workbook(template_file_path)
     sheet = workbook["MAP or COFA"]
 
-    # Iterate through dataframe rows, start at 2 since excel sheet is 1-based index and skip header row
-    for i, dataframe_row in enumerate(dataframe_to_rows(final_df, index=False, header=False), start=2):
+    # Iterate though the columns inthe dataframe
+    for col_name in final_df.columns:
 
-        # Iterate through column values, with 1-based indexing
-        for j, value in enumerate(dataframe_row, start=1):
-            cell = sheet.cell(row=i, column=j)
+        # Find the column in the sheet
+        col_letter = get_column_letter(sheet, col_name)
+        col_data = final_df[col_name]
 
-            # Do not overwrite cell with function
+        # iterate through the rows in the column, skipping the header cell and using one-based indexing
+        for row_idx, value in enumerate(col_data, start=2):
+
+            cell = sheet[f"{col_letter}{row_idx}"]
+
+            # Skip cells with formulas
             if not cell.data_type == "f":
                 cell.value = value
 
-                # Apply formatting if specified
-                get_format(sheet, cell, validation_format_dict)
+                get_format(sheet, cell, validation_format_dict, col_name)
 
     return workbook
 
