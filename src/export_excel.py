@@ -2,22 +2,23 @@
 Module: export_excel
 Description: This module handles the creation of a claims transmittal spreadsheet
              from a remote SQL table. It provides functions for defining header
-             names, and correct formatting of the DATA before entering the spreadsheet.
-             Note: this is not meant to affect the format of the spreadsheet
-             itself (datavalidation, conditional formatting).
+             names, and correct formatting of the data before entering the spreadsheet.
+             It also provides funcitonality for ingesting data into a spreadsheet template.
 
 Author: Urban Halpern
-Date: 2024-12-24
+Version: 2024-01-16
 """
 
 import os
+
 import sqlite3
-import openpyxl.workbook
 import pandas as pd
+
 import openpyxl
+import openpyxl.workbook
 from openpyxl import load_workbook
 from openpyxl.utils.dataframe import dataframe_to_rows
-from openpyxl.styles import Protection
+from openpyxl.styles import Protection, Alignment
 
 
 def create_dataframe(connection_string: str) -> pd.DataFrame:
@@ -105,7 +106,7 @@ def insert_headers(df: pd.DataFrame, columns_to_insert: dict) -> pd.DataFrame:
     return columns_inserted
 
 
-def create_sheet(final_df: pd.DataFrame, sheet_name: str = "Sheet1",  
+def create_sheet(final_df: pd.DataFrame, sheet_name: str = "Sheet1",
                  file_name: str = "output.xlsx", file_path = ".\\generated_sheets") -> None:
     """
     Saves the dataframe to an Excel file using the openpyxl engine. The Excel file
@@ -120,53 +121,26 @@ def create_sheet(final_df: pd.DataFrame, sheet_name: str = "Sheet1",
     Returns:
         full_path (str): Path where spreadsheet was saved
     """
-   
+  
     # Create directory if it does not already exist
     if not os.path.exists(file_path):
         os.mkdir(file_path)
 
     # Combine path and file name
     full_path = os.path.join(file_path, file_name)
-  
+ 
     # Error handling for sheet already existing
     if os.path.exists(full_path):
         raise FileExistsError(f'The file already exists: {full_path}')
 
     # Save the sheet using the full path
     final_df.to_excel(full_path, sheet_name=sheet_name, engine='openpyxl', index=False)
-    print(f'Sheet saved to {file_name} with sheet name: {sheet_name} at {full_path}') 
+    print(f'Sheet saved to {file_name} with sheet name: {sheet_name} at {full_path}')
 
     return full_path
 
 
-def process_row(sheet: openpyxl.worksheet.worksheet, dataframe_row: list, sheet_row: tuple,
-                validation_format_dict: dict) -> None:
-    """
-    Ingests a single dataframe row into a single spreadsheet row in the provided sheet.
-
-    Args:
-        sheet: Sheet object that dataframe is ingesting into
-        dataframe_row (list): preprocessed dataframe row to ingest into sheet_row
-        sheet_row (tuple): tuple of cells representing a spreadsheet row
-
-    """
-
-    for cell in sheet_row:
-        
-        # Prevent overwriting of cells that have formulas
-        if cell.value is None:
-
-            # Get value from dataframe by indexing with the cell column number
-            val_to_insert = dataframe_row[cell.column]
-
-            # Insert the Value
-            cell.value = val_to_insert
-
-            # Add formatting
-            get_format(sheet, cell, validation_format_dict)
-
-
-def get_format(sheet: openpyxl.worksheet.worksheet, cell: openpyxl.cell.cell.Cell, 
+def get_format(sheet: openpyxl.worksheet.worksheet, cell: openpyxl.cell.cell.Cell,
                validation_format_dict: dict) -> None:
     """
     Returns the format string of a cell from the validation_format_dict
@@ -188,10 +162,16 @@ def get_format(sheet: openpyxl.worksheet.worksheet, cell: openpyxl.cell.cell.Cel
 
     # Apply style formatting if the header and style_format field is found
     if format_rules is not None:
-        style_format = validation_format_dict[header].get("style_format")
+        style_format = format_rules.get("style_format")
+        alignment = format_rules.get("alignment")
 
+        # Style Formatting
         if style_format is not None:
             cell.number_format = style_format
+
+        # Alignment
+        if alignment is not None:
+            cell.alignment = Alignment(horizontal=alignment)
 
 
 def insert_into_template(final_df: pd.DataFrame, validation_format_dict: dict) -> openpyxl.workbook.workbook.Workbook:
@@ -217,18 +197,19 @@ def insert_into_template(final_df: pd.DataFrame, validation_format_dict: dict) -
     workbook = load_workbook(template_file_path)
     sheet = workbook["MAP or COFA"]
 
-    # insert dataframe rows
-    for dataframe_row in dataframe_to_rows(final_df, index=True, header=False):
-        
-        # bypass openpyxl dataframe_to_rows first returned element: None ([None])
-        if dataframe_row[0] is not None:
+    # Iterate through dataframe rows, start at 2 since excel sheet is 1-based index and skip header row
+    for i, dataframe_row in enumerate(dataframe_to_rows(final_df, index=False, header=False), start=2):
 
-            # Excel sheet indices are 1-based and we want to skip the header row
-            sheet_index = dataframe_row[0] + 2
+        # Iterate through column values, with 1-based indexing
+        for j, value in enumerate(dataframe_row, start=1):
+            cell = sheet.cell(row=i, column=j)
 
-            # Get the sheetrow at the specified index and only include 20 columns (length of dataframe)
-            sheet_row = next(sheet.iter_rows(min_row=sheet_index, max_row=sheet_index, min_col=1, max_col=20))
-            process_row(sheet, dataframe_row, sheet_row, validation_format_dict)
+            # Do not overwrite cell with function
+            if not cell.data_type == "f":
+                cell.value = value
+
+                # Apply formatting if specified
+                get_format(sheet, cell, validation_format_dict)
 
     return workbook
 
@@ -250,13 +231,14 @@ def save_workbook(workbook: openpyxl.workbook.Workbook, workbook_name: str = "CT
     if os.path.exists(save_path):
         raise FileExistsError(f'The file already exists: {save_path}')
 
+    # Save workbook
     workbook.save(save_path)
     print(f'Sheet saved to {workbook_name} at {save_path}') 
 
     return save_path
 
 
-def protection_handler(workbook: openpyxl.workbook.Workbook, cols_to_unprotect: list, 
+def protection_handler(workbook: openpyxl.workbook.Workbook, cols_to_unprotect: list,
                        password: str = "test", row_range: int = 50) -> None:
     """
     Un-protects columns that do not need protection
@@ -302,28 +284,28 @@ def get_column_letter(sheet: openpyxl.worksheet.worksheet.Worksheet, column_name
 
         # Extract the first row cell
         header_cell = col[0]
-       
+      
         # If header cell name found, return column letter
         if header_cell.value == column_name:
             return header_cell.column_letter
-   
+  
     # Raise error if the column was not found in the sheet.
     if column_letter is None:
         raise ValueError(f'Specified Column: {column_name} not found in sheet.')
 
 
 def unlock_column(sheet: openpyxl.worksheet.worksheet.Worksheet, column_to_unlock: str, row_range: int):
-        """
-        This method unlocks the cells in a column to allow user entry
-        assuming the sheet was already set to protection mode.
-        The header cell will remain locked for each column.
+    """
+    This method unlocks the cells in a column to allow user entry
+    assuming the sheet was already set to protection mode.
+    The header cell will remain locked for each column.
 
-        Args:
-            sheet (openpyxl.worksheet.worksheet.Worksheet): sheet to unlock columns in
-            column_to_unlock (str): letter of the column to unlock
-            range (int): Range of cells to unlock
-        """
+    Args:
+        sheet (openpyxl.worksheet.worksheet.Worksheet): sheet to unlock columns in
+        column_to_unlock (str): letter of the column to unlock
+        range (int): Range of cells to unlock
+    """
 
-        # iterate through cells in the column, skipping the header cell
-        for cell in sheet[column_to_unlock][1:row_range]:
-            cell.protection = Protection(locked=False)  # Unlock the cell
+    # iterate through cells in the column, skipping the header cell
+    for cell in sheet[column_to_unlock][1:row_range]:
+        cell.protection = Protection(locked=False)  # Unlock the cell

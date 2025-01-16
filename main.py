@@ -1,7 +1,7 @@
 import json
 import argparse
 import datetime
-from src import export_excel, modify_excel
+from src import export_excel
 
 # Transforms SQL table var names to Excel Header Names
 headers_mapping = {
@@ -43,7 +43,7 @@ unprotected_columns = [
                        ]
 
 # Loading configuration file with formatting for each column
-with open("config.json") as f:
+with open("config.json", encoding='utf-8') as f:
     config_dict =  json.load(f)
 
 def main(excel_file_name: str):
@@ -63,7 +63,6 @@ def main(excel_file_name: str):
 
     # Insert columns for user entry
     final_df = export_excel.insert_headers(reformatted_date, inserted_columns)
-    print(final_df.head(3))
 
     # Get number of samples from query
     num_rows = final_df.shape[0]

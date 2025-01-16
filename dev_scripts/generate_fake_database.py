@@ -1,11 +1,19 @@
 import sqlite3
 import os
 
+
+# Go up one level from the current working directory
+parent_dir = os.path.abspath(os.path.join(os.getcwd(), '..'))
+database_path = os.path.join(parent_dir, 'data', 'medical_data.db')
+
+print("\nParent Directory:", parent_dir)
+print("\nDatabase Path:", database_path)
+
 # check if table already exists
-if not os.path.exists("data/medical_data.db"):
+if not os.path.exists(database_path):
 
     # Create a connection to a local SQLite database file
-    connection = sqlite3.connect("data/medical_data.db")  # This will create 'medical_services.db' in your working directory
+    connection = sqlite3.connect(database_path)  # This will create 'medical_services.db' in your working directory
     cursor = connection.cursor()
 
     # Create the table
@@ -41,9 +49,10 @@ if not os.path.exists("data/medical_data.db"):
 
     # Save and close
     connection.commit()
-    print("SQLite database created and populated!")
+    print("\nSQLite database created and populated!")
+    connection.close()
 
 else:
-    print("SQLite database already exists")
-connection.close()
+    print("\nSQLite database already exists")
+
 

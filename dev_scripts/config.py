@@ -154,6 +154,65 @@ validation_format_dict2 = {
     },
 }
 
+validation_format_dict3 = {
+    "MEDICAID ID": {
+        "style_format": '00-000000-00',
+        "alignment": "right"
+    },
+
+    "DATE OF BIRTH": {
+        "style_format": 'MM/DD/YY'
+    },
+
+    "COVERAGE EXPIRATION DATE": {
+        "style_format": 'MM/DD/YY'
+    },
+
+    "DATE OF SERVICE": {
+        "style_format": 'MM/DD/YY'
+    },
+
+    "CPT/HCPCS/DENTAL CODE": {
+        "alignment": "right"
+    },
+
+    "SERVICE CODE MODIFIER": {
+        "alignment": "right"
+    },
+
+    "BILLED AMOUNT": {
+        "style_format": '_($* #,##0.00_);_($* (#,##0.00);_($* "-"??_);_(@_)'
+    },
+
+    "GRAND TOTAL": {
+        "style_format": '_($* #,##0.00_);_($* (#,##0.00);_($* "-"??_);_(@_)',
+    },
+
+    "AMOUNT DUE": {
+        "style_format": '_($* #,##0.00_);_($* (#,##0.00);_($* "-"??_);_(@_)'
+    },
+
+    "LOCAL SHARE": {
+        "style_format": '_($* #,##0.00_);_($* (#,##0.00);_($* "-"??_);_(@_)',
+    },
+
+    "FEDERAL SHARE": {
+        "style_format": '_($* #,##0.00_);_($* (#,##0.00);_($* "-"??_);_(@_)',
+    },
+
+    "SPEND DOWN": {
+        "style_format": '_($* #,##0.00_);_($* (#,##0.00);_($* "-"??_);_(@_)'
+    },
+
+    "TPL AMOUNT": {
+        "style_format": '_($* #,##0.00_);_($* (#,##0.00);_($* "-"??_);_(@_)'
+    },
+
+    "CONTRACTUAL ADJUSTMENT": {
+        "style_format": '_($* #,##0.00_);_($* (#,##0.00);_($* "-"??_);_(@_)'
+    },
+}
+
 # Get path to parent directory
 parent_dir = os.path.abspath(os.path.join(os.getcwd(), ".."))
 
@@ -161,5 +220,6 @@ parent_dir = os.path.abspath(os.path.join(os.getcwd(), ".."))
 file_path = os.path.join(parent_dir, 'config.json')
 
 # Save the file in parent directory
-with open(file_path, 'w') as f:
-    json.dump(validation_format_dict2, f, indent=4)
+with open(file_path, 'w', encoding="utf-8") as f:
+    json.dump(validation_format_dict3, f, indent=4)
+    

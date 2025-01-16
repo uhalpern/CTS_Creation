@@ -1,14 +1,18 @@
 """
 Module: modify_excel
-Description: This module handles the implementation of Data Validation and formatting
+Description: DEPRECATED
+            This module handles the implementation of Data Validation and formatting
              for the generated Excel spreadsheet from export_excel.py. The module will
              make use of the openpyxl library which provides methods for modifying an Excel
              workbook. We use a class instantiation of an openpyxl.workbook and create
              custom methods to create the spreadsheet with the desired formatting and
              data validation.
 
+             Deprecated on 2025-01-16. Functionality of this module is not taken care
+             of export_excel.py and CTS_Example_Template.xlsx
+
 Author: Urban Halpern
-Date: 2024-12-26
+Date: 2025-01-16
 """
 
 import os
