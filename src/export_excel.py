@@ -17,7 +17,6 @@ import pandas as pd
 import openpyxl
 import openpyxl.workbook
 from openpyxl import load_workbook
-from openpyxl.utils.dataframe import dataframe_to_rows
 from openpyxl.styles import Protection, Alignment
 
 
