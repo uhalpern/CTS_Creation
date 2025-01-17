@@ -139,8 +139,7 @@ def create_sheet(final_df: pd.DataFrame, sheet_name: str = "Sheet1",
     return full_path
 
 
-def get_format(sheet: openpyxl.worksheet.worksheet, cell: openpyxl.cell.cell.Cell,
-               validation_format_dict: dict, header: str) -> None:
+def get_format(cell: openpyxl.cell.cell.Cell, validation_format_dict: dict, header: str) -> None:
     """
     Returns the format string of a cell from the validation_format_dict
 
@@ -151,11 +150,6 @@ def get_format(sheet: openpyxl.worksheet.worksheet, cell: openpyxl.cell.cell.Cel
         header (str): header name to lookup in validation_format_dict
 
     """
-
-    # # Get the columns header from the sheet
-    # column_letter = cell.column_letter
-    # header_cell = sheet[f"{column_letter}1"]
-    # header = header_cell.value
 
     # Look for the header in the validation_format_dict
     format_rules = validation_format_dict.get(header)
@@ -213,7 +207,7 @@ def insert_into_template(final_df: pd.DataFrame, validation_format_dict: dict) -
             if not cell.data_type == "f":
                 cell.value = value
 
-                get_format(sheet, cell, validation_format_dict, col_name)
+                get_format(cell, validation_format_dict, col_name)
 
     return workbook
 
