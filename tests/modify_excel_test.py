@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 import pytest
-from src import modify_excel, export_excel
+from src import modify_excel, setup_dataframe
 
 
 class TestExcelModification:
@@ -22,7 +22,7 @@ class TestExcelModification:
         cls.row_range = 10
 
         # Create the Excel sheet and initialize the spreadsheet object
-        cls.filepath = export_excel.create_sheet(cls.test_df, file_name=cls.file_name)
+        cls.filepath = setup_dataframe.create_sheet(cls.test_df, file_name=cls.file_name)
         cls.spreadsheet = modify_excel.CustomSpreadsheet(filepath=cls.filepath, row_range=cls.row_range)
         cls.spreadsheet.set_sheet(cls.sheet_name)
 

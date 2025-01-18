@@ -1,45 +1,45 @@
-from src import export_excel
-import pandas as pd
 import os
 import pytest
+import openpyxl
+from src import export_excel
+
+class TestDataIngestion:
+    @classmethod
+    def setup_class(cls):
+        """
+        Setup logic shared by all tests in the class.
+        Runs once before any test methods are executed
+        """
+
+        # Load Test Workbook
+        print(os.getcwd())
+        # C:\Users\urban\Documents\GitHub\CTS_Creation\tests\CTS_Test.xlsx
+        cls.test_workbook = openpyxl.load_workbook(os.path.join("tests", "CTS_Test.xlsx"))
+        cls.test_worksheet = cls.test_workbook["MAP or COFA"]
 
 
-def test_create_dataframe():
-    test_df = export_excel.create_dataframe("data/medical_data.db")
+    def test_get_column_letter(self):
+       
+        expected_col_letter = "B"
+        col_letter = export_excel.get_column_letter(self.test_worksheet, "LAST NAME")
 
-    try:
-        # Assert that the dataframe has 14 columns
-        assert test_df.shape[1] == 14
-    except AssertionError:
-        # Print the details when the assertion fails
-        print(f"Assertion failed: Expected 14 columns, but got {test_df.shape[1]} columns.")
-        print(f"Columns: {test_df.columns.tolist()}")  # Prints column names for debugging
-        raise  # Re-raise the exception so the test still fails
+        assert col_letter == expected_col_letter
 
-def test_create_sheet():
+        with pytest.raises(ValueError):
+            col_letter = export_excel.get_column_letter(self.test_worksheet, "NOT IN SHEET")
 
-    test_data = {
-        "date_column": ["2024-12-30"],
-        "value": [42]
-    }
+    def test_add_protection(self):
+       
+        password = "test"
+        col_to_unlock = ["LAST NAME"]
 
-    test_df = pd.DataFrame(test_data)
+        export_excel.protection_handler(self.test_workbook, col_to_unlock, password=password, row_range=5)
 
-    # Test successful creation:
-    
-    path = export_excel.create_sheet(test_df, file_name="test.xlsx")
+        for row in range(2, 6):                 
+            cell = self.test_worksheet[f"B{row}"]  # Access the cell in column B
+            
+            assert cell.protection.locked is False
 
-    try:
-        # Assert the file was created successfully
-        assert os.path.isfile(path)
-    except AssertionError:
-        print(f"The file was not ceated successfully: {path}")
-        raise
+        protected_cell = self.test_worksheet["A1"]
 
-    # Test error handling for duplicate file
-    with pytest.raises(FileExistsError):
-            export_excel.create_sheet(test_df, file_name="test.xlsx")
-
-    # Cleanup the created file and directory
-    if os.path.exists(path):
-        os.remove(path)
+        assert protected_cell.protection.locked is True

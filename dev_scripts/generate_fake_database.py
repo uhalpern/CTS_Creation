@@ -4,7 +4,7 @@ import os
 
 # Go up one level from the current working directory
 parent_dir = os.path.abspath(os.path.join(os.getcwd(), '..'))
-database_path = os.path.join(parent_dir, 'data', 'medical_data.db')
+database_path = os.path.join(parent_dir, 'data', 'test_medical_data.db')
 
 print("\nParent Directory:", parent_dir)
 print("\nDatabase Path:", database_path)

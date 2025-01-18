@@ -1,45 +1,84 @@
 {
-    "MEDICAID ID": {
-        "style_format": "00-000000-00",
-        "alignment": "right"
+    "formatting": {
+        "MEDICAID ID": {
+            "style_format": "00-000000-00",
+            "alignment": "right"
+        },
+        "DATE OF BIRTH": {
+            "style_format": "MM/DD/YY"
+        },
+        "COVERAGE EXPIRATION DATE": {
+            "style_format": "MM/DD/YY"
+        },
+        "DATE OF SERVICE": {
+            "style_format": "MM/DD/YY"
+        },
+        "CPT/HCPCS/DENTAL CODE": {
+            "alignment": "right"
+        },
+        "SERVICE CODE MODIFIER": {
+            "alignment": "right"
+        },
+        "BILLED AMOUNT": {
+            "style_format": "_($* #,##0.00_);_($* (#,##0.00);_($* \"-\"??_);_(@_)"
+        },
+        "GRAND TOTAL": {
+            "style_format": "_($* #,##0.00_);_($* (#,##0.00);_($* \"-\"??_);_(@_)"
+        },
+        "AMOUNT DUE": {
+            "style_format": "_($* #,##0.00_);_($* (#,##0.00);_($* \"-\"??_);_(@_)"
+        },
+        "LOCAL SHARE": {
+            "style_format": "_($* #,##0.00_);_($* (#,##0.00);_($* \"-\"??_);_(@_)"
+        },
+        "FEDERAL SHARE": {
+            "style_format": "_($* #,##0.00_);_($* (#,##0.00);_($* \"-\"??_);_(@_)"
+        },
+        "SPEND DOWN": {
+            "style_format": "_($* #,##0.00_);_($* (#,##0.00);_($* \"-\"??_);_(@_)"
+        },
+        "TPL AMOUNT": {
+            "style_format": "_($* #,##0.00_);_($* (#,##0.00);_($* \"-\"??_);_(@_)"
+        },
+        "CONTRACTUAL ADJUSTMENT": {
+            "style_format": "_($* #,##0.00_);_($* (#,##0.00);_($* \"-\"??_);_(@_)"
+        }
     },
-    "DATE OF BIRTH": {
-        "style_format": "MM/DD/YY"
+    "database_fields_to_headers": {
+        "control_account_number": "CONTROL/ACCOUNT #",
+        "last_name": "LAST NAME",
+        "first_name": "FIRST NAME",
+        "middle": "MIDDLE",
+        "date_of_birth": "DATE OF BIRTH",
+        "medicaid_id": "MEDICAID ID",
+        "coverage_expiration_date": "COVERAGE EXPIRATION DATE",
+        "date_of_service": "DATE OF SERVICE",
+        "cpt_hcpcs_dental_code": "CPT/HCPCS/DENTAL CODE",
+        "service_code_modifier": "SERVICE CODE MODIFIER",
+        "billed_amount": "BILLED AMOUNT",
+        "spend_down": "SPEND DOWN",
+        "tpl_amount": "TPL AMOUNT",
+        "tpl": "TPL"
     },
-    "COVERAGE EXPIRATION DATE": {
-        "style_format": "MM/DD/YY"
+    "date_columns": [
+        "DATE OF BIRTH",
+        "COVERAGE EXPIRATION DATE",
+        "DATE OF SERVICE"
+    ],
+    "inserted_columns": {
+        "GRAND TOTAL": 11,
+        "AMOUNT DUE": 12,
+        "LOCAL SHARE": 13,
+        "FEDERAL SHARE": 14,
+        "CONTRACTUAL ADJUSTMENT": 18,
+        "ADJUSTMENT REASON": 19,
+        "NOTE": 20
     },
-    "DATE OF SERVICE": {
-        "style_format": "MM/DD/YY"
-    },
-    "CPT/HCPCS/DENTAL CODE": {
-        "alignment": "right"
-    },
-    "SERVICE CODE MODIFIER": {
-        "alignment": "right"
-    },
-    "BILLED AMOUNT": {
-        "style_format": "_($* #,##0.00_);_($* (#,##0.00);_($* \"-\"??_);_(@_)"
-    },
-    "GRAND TOTAL": {
-        "style_format": "_($* #,##0.00_);_($* (#,##0.00);_($* \"-\"??_);_(@_)"
-    },
-    "AMOUNT DUE": {
-        "style_format": "_($* #,##0.00_);_($* (#,##0.00);_($* \"-\"??_);_(@_)"
-    },
-    "LOCAL SHARE": {
-        "style_format": "_($* #,##0.00_);_($* (#,##0.00);_($* \"-\"??_);_(@_)"
-    },
-    "FEDERAL SHARE": {
-        "style_format": "_($* #,##0.00_);_($* (#,##0.00);_($* \"-\"??_);_(@_)"
-    },
-    "SPEND DOWN": {
-        "style_format": "_($* #,##0.00_);_($* (#,##0.00);_($* \"-\"??_);_(@_)"
-    },
-    "TPL AMOUNT": {
-        "style_format": "_($* #,##0.00_);_($* (#,##0.00);_($* \"-\"??_);_(@_)"
-    },
-    "CONTRACTUAL ADJUSTMENT": {
-        "style_format": "_($* #,##0.00_);_($* (#,##0.00);_($* \"-\"??_);_(@_)"
-    }
+    "unprotected_columns": [
+        "AMOUNT DUE",
+        "SPEND DOWN",
+        "CONTRACTUAL ADJUSTMENT",
+        "ADJUSTMENT REASON",
+        "NOTE"
+    ]
 }
