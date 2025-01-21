@@ -8,7 +8,7 @@ Description: This module handles the creation of a pandas dataframe from a
 
 Author: Urban Halpern
 Original Creation: 2025-01-17
-Latest Revision: 2025-01-17
+Latest Revision: 2025-01-21
 """
 
 import os
@@ -81,6 +81,10 @@ def format_date_columns(df: pd.DataFrame, column_names_list: list) -> pd.DataFra
 
 def insert_headers(df: pd.DataFrame, columns_to_insert: dict) -> pd.DataFrame:
     """
+    !! DEPRECATED !!
+    Deprecated 01/21/2025: No longer needed since data insertion searches for column
+    in the the spreadsheet and dataframe does not require strict format.
+
     Some of the columns in the output spreadsheet are not extracted from the SQL
     database. Instead, these columns will be for user entry. This function
     will insert these columns into a copy of df and return it.

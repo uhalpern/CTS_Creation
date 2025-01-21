@@ -20,11 +20,9 @@ def main(excel_file_name: str):
 
     # Rename the headers of the dataframe
     renamed_headers = setup_dataframe.transform_header(raw_dataframe, mapping_dict=config_dict["database_fields_to_headers"])
-    # Reformat the date columns
-    reformatted_date = setup_dataframe.format_date_columns(renamed_headers, config_dict["date_columns"])
 
-    # Insert columns for user entry
-    final_df = setup_dataframe.insert_headers(reformatted_date, config_dict["inserted_columns"])
+    # Reformat the date columns
+    final_df = setup_dataframe.format_date_columns(renamed_headers, config_dict["date_columns"])
 
     """ 
     Exporting Excel
