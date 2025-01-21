@@ -14,6 +14,7 @@ Latest Revision: 2025-01-17
 import os
 import sqlite3
 import pandas as pd
+import pyodbc
 
 def create_dataframe(connection_string: str) -> pd.DataFrame:
     """
@@ -31,8 +32,17 @@ def create_dataframe(connection_string: str) -> pd.DataFrame:
 
     connection = sqlite3.connect(connection_string)
 
+    connection_string = (
+        "Driver={ODBC Driver 17 for SQL Server};"
+        "Server=URBAN-LAPTOP;"  # Replace with your server name
+        "Database=Fake_Tasi_Database;"  # Replace with your database name
+        "Trusted_Connection=yes;"  # Use 'yes' for Windows Authentication
+    )
+
+    connection = pyodbc.connect(connection_string)
+
     # Query the database
-    query = "SELECT * FROM medical_data;"
+    query = "SELECT * FROM claim_transmittal_table;"
     df = pd.read_sql_query(query, connection)
 
     return df
