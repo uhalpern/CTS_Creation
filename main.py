@@ -10,9 +10,7 @@ def main(excel_file_name: str):
     with open("config.json", encoding='utf-8') as f:
         config_dict =  json.load(f)
 
-    """ 
-    Setting Up Dataframe
-    """
+    """Setting Up Dataframe"""
 
     # Read in dataframe and format data
     server_connection_string = "data/medical_data.db"
@@ -24,9 +22,7 @@ def main(excel_file_name: str):
     # Reformat the date columns
     final_df = setup_dataframe.format_date_columns(renamed_headers, config_dict["date_columns"])
 
-    """ 
-    Exporting Excel
-    """
+    """Exporting Excel"""
 
     # Get number of samples from query
     num_rows = final_df.shape[0]
