@@ -15,6 +15,7 @@ import openpyxl
 import openpyxl.workbook
 from openpyxl import load_workbook
 from openpyxl.styles import Protection, Alignment
+from src.Logger_Template import log_function_call
 
 
 def get_format(cell: openpyxl.cell.cell.Cell, validation_format_dict: dict, header: str) -> None:
@@ -45,7 +46,7 @@ def get_format(cell: openpyxl.cell.cell.Cell, validation_format_dict: dict, head
         if alignment is not None:
             cell.alignment = Alignment(horizontal=alignment)
 
-
+@log_function_call
 def insert_into_template(final_df: pd.DataFrame, validation_format_dict: dict) -> openpyxl.workbook.workbook.Workbook:
     """
     Inserts data into the template spreadsheet using data from the final_df by column
@@ -89,7 +90,7 @@ def insert_into_template(final_df: pd.DataFrame, validation_format_dict: dict) -
 
     return workbook
 
-
+@log_function_call
 def save_workbook(workbook: openpyxl.workbook.Workbook, workbook_name: str = "CTS_Insert_Example.xlsx") -> None:
     """
     Saves the workbook to the specified path and checks if file already exists
@@ -114,7 +115,7 @@ def save_workbook(workbook: openpyxl.workbook.Workbook, workbook_name: str = "CT
 
     return save_path
 
-
+@log_function_call
 def protection_handler(workbook: openpyxl.workbook.Workbook, cols_to_unprotect: list,
                        password: str = "test", row_range: int = 50) -> None:
     """

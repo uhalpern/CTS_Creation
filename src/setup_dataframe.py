@@ -14,7 +14,9 @@ Latest Revision: 2025-01-21
 import os
 import sqlite3
 import pandas as pd
+from src.Logger_Template import log_function_call
 
+@log_function_call
 def create_dataframe(connection_string: str) -> pd.DataFrame:
     """
     Connects to MS SQL database and queries table information into dataframe.

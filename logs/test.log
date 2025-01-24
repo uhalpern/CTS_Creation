@@ -1,0 +1,72 @@
+INFO:src.Logger_Template:2025-01-23 10:57:18,500:wrapper(): line 58: Running create_dataframe with args: ('data/medical_data.db',), kwargs: {}
+INFO:src.Logger_Template:2025-01-23 10:57:18,521:wrapper(): line 61: Finished create_dataframe and returning    control_account_number last_name first_name middle date_of_birth medicaid_id  ... cpt_hcpcs_dental_code service_code_modifier billed_amount spend_down  tpl_amount                tpl
+0              1234567890     Smith       John      A    1980-01-01   MED123456  ...                 D1234                  MOD1        150.73         50          20  Private Insurance
+1              0987654321       Doe       Jane      B    1975-05-15   MED654321  ...                 C4567                  MOD2        200.23         75          30           Medicare
+2              5678901234     Brown    Michael      C    1990-09-20   MED789012  ...                 H7890                  MOD3        300.47        100          40               None
+3              1234567890     Smith       John      A    1980-01-01   MED123456  ...                 D1234                  MOD1        150.73         50          20  Private Insurance
+4              0987654321       Doe       Jane      B    1975-05-15   MED654321  ...                 C4567                  MOD2        200.23         75          30           Medicare
+5              5678901234     Brown    Michael      C    1990-09-20   MED789012  ...                 H7890                  MOD3        300.47        100          40               None
+6              1234567890     Smith       John      A    1980-01-01   MED123456  ...                 D1234                  MOD1        150.73         50          20  Private Insurance
+7              0987654321       Doe       Jane      B    1975-05-15   MED654321  ...                 C4567                  MOD2        200.23         75          30           Medicare
+8              5678901234     Brown    Michael      C    1990-09-20   MED789012  ...                 H7890                  MOD3        300.47        100          40               None
+9              1234567890     Smith       John      A    1980-01-01   MED123456  ...                 D1234                  MOD1        150.73         50          20  Private Insurance
+10             0987654321       Doe       Jane      B    1975-05-15   MED654321  ...                 C4567                  MOD2        200.23         75          30           Medicare
+11             5678901234     Brown    Michael      C    1990-09-20   MED789012  ...                 H7890                  MOD3        300.47        100          40               None
+12             1234567890     Smith       John      A    1980-01-01   MED123456  ...                 D1234                  MOD1        150.73         50          20  Private Insurance
+13             0987654321       Doe       Jane      B    1975-05-15   MED654321  ...                 C4567                  MOD2        200.23         75          30           Medicare
+14             5678901234     Brown    Michael      C    1990-09-20   MED789012  ...                 H7890                  MOD3        300.47        100          40               None
+15             1234567890     Smith       John      A    1980-01-01   MED123456  ...                 D1234                  MOD1        150.73         50          20  Private Insurance
+16             0987654321       Doe       Jane      B    1975-05-15   MED654321  ...                 C4567                  MOD2        200.23         75          30           Medicare
+17             5678901234     Brown    Michael      C    1990-09-20   MED789012  ...                 H7890                  MOD3        300.47        100          40               None
+18             1234567890     Smith       John      A    1980-01-01   MED123456  ...                 D1234                  MOD1        150.73         50          20  Private Insurance
+19             0987654321       Doe       Jane      B    1975-05-15   MED654321  ...                 C4567                  MOD2        200.23         75          30           Medicare
+20             5678901234     Brown    Michael      C    1990-09-20   MED789012  ...                 H7890                  MOD3        300.47        100          40               None
+21             1234567890     Smith       John      A    1980-01-01   MED123456  ...                 D1234                  MOD1        150.73         50          20  Private Insurance
+22             0987654321       Doe       Jane      B    1975-05-15   MED654321  ...                 C4567                  MOD2        200.23         75          30           Medicare
+23             5678901234     Brown    Michael      C    1990-09-20   MED789012  ...                 H7890                  MOD3        300.47        100          40               None
+24             1234567890     Smith       John      A    1980-01-01   MED123456  ...                 D1234                  MOD1        150.73         50          20  Private Insurance
+25             0987654321       Doe       Jane      B    1975-05-15   MED654321  ...                 C4567                  MOD2        200.23         75          30           Medicare
+26             5678901234     Brown    Michael      C    1990-09-20   MED789012  ...                 H7890                  MOD3        300.47        100          40               None
+27             1234567890     Smith       John      A    1980-01-01   MED123456  ...                 D1234                  MOD1        150.73         50          20  Private Insurance
+28             0987654321       Doe       Jane      B    1975-05-15   MED654321  ...                 C4567                  MOD2        200.23         75          30           Medicare
+29             5678901234     Brown    Michael      C    1990-09-20   MED789012  ...                 H7890                  MOD3        300.47        100          40               None
+
+[30 rows x 14 columns]
+INFO:src.Logger_Template:2025-01-23 10:57:18,539:wrapper(): line 58: Running insert_into_template with args: (   CONTROL/ACCOUNT # LAST NAME FIRST NAME MIDDLE DATE OF BIRTH MEDICAID ID  ... CPT/HCPCS/DENTAL CODE SERVICE CODE MODIFIER BILLED AMOUNT SPEND DOWN  TPL AMOUNT                TPL
+0         1234567890     Smith       John      A    1980-01-01   MED123456  ...                 D1234                  MOD1        150.73         50          20  Private Insurance
+1         0987654321       Doe       Jane      B    1975-05-15   MED654321  ...                 C4567                  MOD2        200.23         75          30           Medicare
+2         5678901234     Brown    Michael      C    1990-09-20   MED789012  ...                 H7890                  MOD3        300.47        100          40               None
+3         1234567890     Smith       John      A    1980-01-01   MED123456  ...                 D1234                  MOD1        150.73         50          20  Private Insurance
+4         0987654321       Doe       Jane      B    1975-05-15   MED654321  ...                 C4567                  MOD2        200.23         75          30           Medicare
+5         5678901234     Brown    Michael      C    1990-09-20   MED789012  ...                 H7890                  MOD3        300.47        100          40               None
+6         1234567890     Smith       John      A    1980-01-01   MED123456  ...                 D1234                  MOD1        150.73         50          20  Private Insurance
+7         0987654321       Doe       Jane      B    1975-05-15   MED654321  ...                 C4567                  MOD2        200.23         75          30           Medicare
+8         5678901234     Brown    Michael      C    1990-09-20   MED789012  ...                 H7890                  MOD3        300.47        100          40               None
+9         1234567890     Smith       John      A    1980-01-01   MED123456  ...                 D1234                  MOD1        150.73         50          20  Private Insurance
+10        0987654321       Doe       Jane      B    1975-05-15   MED654321  ...                 C4567                  MOD2        200.23         75          30           Medicare
+11        5678901234     Brown    Michael      C    1990-09-20   MED789012  ...                 H7890                  MOD3        300.47        100          40               None
+12        1234567890     Smith       John      A    1980-01-01   MED123456  ...                 D1234                  MOD1        150.73         50          20  Private Insurance
+13        0987654321       Doe       Jane      B    1975-05-15   MED654321  ...                 C4567                  MOD2        200.23         75          30           Medicare
+14        5678901234     Brown    Michael      C    1990-09-20   MED789012  ...                 H7890                  MOD3        300.47        100          40               None
+15        1234567890     Smith       John      A    1980-01-01   MED123456  ...                 D1234                  MOD1        150.73         50          20  Private Insurance
+16        0987654321       Doe       Jane      B    1975-05-15   MED654321  ...                 C4567                  MOD2        200.23         75          30           Medicare
+17        5678901234     Brown    Michael      C    1990-09-20   MED789012  ...                 H7890                  MOD3        300.47        100          40               None
+18        1234567890     Smith       John      A    1980-01-01   MED123456  ...                 D1234                  MOD1        150.73         50          20  Private Insurance
+19        0987654321       Doe       Jane      B    1975-05-15   MED654321  ...                 C4567                  MOD2        200.23         75          30           Medicare
+20        5678901234     Brown    Michael      C    1990-09-20   MED789012  ...                 H7890                  MOD3        300.47        100          40               None
+21        1234567890     Smith       John      A    1980-01-01   MED123456  ...                 D1234                  MOD1        150.73         50          20  Private Insurance
+22        0987654321       Doe       Jane      B    1975-05-15   MED654321  ...                 C4567                  MOD2        200.23         75          30           Medicare
+23        5678901234     Brown    Michael      C    1990-09-20   MED789012  ...                 H7890                  MOD3        300.47        100          40               None
+24        1234567890     Smith       John      A    1980-01-01   MED123456  ...                 D1234                  MOD1        150.73         50          20  Private Insurance
+25        0987654321       Doe       Jane      B    1975-05-15   MED654321  ...                 C4567                  MOD2        200.23         75          30           Medicare
+26        5678901234     Brown    Michael      C    1990-09-20   MED789012  ...                 H7890                  MOD3        300.47        100          40               None
+27        1234567890     Smith       John      A    1980-01-01   MED123456  ...                 D1234                  MOD1        150.73         50          20  Private Insurance
+28        0987654321       Doe       Jane      B    1975-05-15   MED654321  ...                 C4567                  MOD2        200.23         75          30           Medicare
+29        5678901234     Brown    Michael      C    1990-09-20   MED789012  ...                 H7890                  MOD3        300.47        100          40               None
+
+[30 rows x 14 columns],), kwargs: {'validation_format_dict': {'MEDICAID ID': {'style_format': '00-000000-00', 'alignment': 'right'}, 'DATE OF BIRTH': {'style_format': 'MM/DD/YY'}, 'COVERAGE EXPIRATION DATE': {'style_format': 'MM/DD/YY'}, 'DATE OF SERVICE': {'style_format': 'MM/DD/YY'}, 'CPT/HCPCS/DENTAL CODE': {'alignment': 'right'}, 'SERVICE CODE MODIFIER': {'alignment': 'right'}, 'BILLED AMOUNT': {'style_format': '_($* #,##0.00_);_($* (#,##0.00);_($* "-"??_);_(@_)'}, 'GRAND TOTAL': {'style_format': '_($* #,##0.00_);_($* (#,##0.00);_($* "-"??_);_(@_)'}, 'AMOUNT DUE': {'style_format': '_($* #,##0.00_);_($* (#,##0.00);_($* "-"??_);_(@_)'}, 'LOCAL SHARE': {'style_format': '_($* #,##0.00_);_($* (#,##0.00);_($* "-"??_);_(@_)'}, 'FEDERAL SHARE': {'style_format': '_($* #,##0.00_);_($* (#,##0.00);_($* "-"??_);_(@_)'}, 'SPEND DOWN': {'style_format': '_($* #,##0.00_);_($* (#,##0.00);_($* "-"??_);_(@_)'}, 'TPL AMOUNT': {'style_format': '_($* #,##0.00_);_($* (#,##0.00);_($* "-"??_);_(@_)'}, 'CONTRACTUAL ADJUSTMENT': {'style_format': '_($* #,##0.00_);_($* (#,##0.00);_($* "-"??_);_(@_)'}}}
+INFO:src.Logger_Template:2025-01-23 10:57:18,771:wrapper(): line 61: Finished insert_into_template and returning <openpyxl.workbook.workbook.Workbook object at 0x000002BA6A653920>
+INFO:src.Logger_Template:2025-01-23 10:57:18,771:wrapper(): line 58: Running protection_handler with args: (<openpyxl.workbook.workbook.Workbook object at 0x000002BA6A653920>, ['AMOUNT DUE', 'SPEND DOWN', 'CONTRACTUAL ADJUSTMENT', 'ADJUSTMENT REASON', 'NOTE'], 'test', 30), kwargs: {}
+INFO:src.Logger_Template:2025-01-23 10:57:18,806:wrapper(): line 61: Finished protection_handler and returning None
+INFO:src.Logger_Template:2025-01-23 10:57:18,806:wrapper(): line 58: Running save_workbook with args: (<openpyxl.workbook.workbook.Workbook object at 0x000002BA6A653920>, '01-23-2025_10-57-18.xlsx'), kwargs: {}
+INFO:src.Logger_Template:2025-01-23 10:57:19,082:wrapper(): line 61: Finished save_workbook and returning C:\Users\urban\Documents\GitHub\CTS_Creation\generated_sheets\01-23-2025_10-57-18.xlsx
