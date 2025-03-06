@@ -52,17 +52,27 @@ The configuration and fake data is already created for the example spreadsheet. 
     ```bash
     pipenv shell
     ```
-2. Remove `python_CTS_example.xlsx` from `generated_sheets`
+2. Set up data base connection
+    - open `setup_dataframe.py` file and locate **line 43**
+    - In line 43, you will find the placeholder for the connection string.
+    - Replace the placeholder values with your actual database credentials and details:
+    - username: Your database username
+    - password: Your database password
+    - hostname: The hostname or IP address of your SQL Server
+    - database_name: The name of the database you want to connect to
+    - driver: Ensure you have the appropriate driver installed, e.g., ODBC Driver 17 for SQL Server for Microsoft SQL Server
 3. Run the main script
     ```bash
     python main.py
+    ```
+     Use dev database for testing (Optional)
+    ```bash
+    python main.py -d
     ```
     Specify Filename (Optional)
     ```bash
     python main.py -n "filename.xlsx"
     ```
-
-## Contributing
 
 
 

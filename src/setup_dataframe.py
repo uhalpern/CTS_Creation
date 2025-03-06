@@ -33,6 +33,12 @@ def create_dataframe(dev: bool) -> pd.DataFrame:
         connection = sqlite3.connect(connection_string)
     else:
         # MS SQL Server connection using SQLAlchemy
+        # Replace 'username', 'password', 'URBAN-LAPTOP', and 'Fake_Tasi_Database' with your own credentials and database details.
+        # - 'username' and 'password' are your database login credentials.
+        # - 'URBAN-LAPTOP' should be replaced with the hostname or IP address of your SQL Server.
+        # - 'Fake_Tasi_Database' should be replaced with the name of the database you want to connect to.
+        # - If your SQL Server is hosted remotely, replace 'URBAN-LAPTOP' with the server's public IP or hostname.
+        # - Make sure to install the 'ODBC Driver 17 for SQL Server' on your machine.
         connection_string = (
             "mssql+pyodbc://username:password@URBAN-LAPTOP/Fake_Tasi_Database?driver=ODBC+Driver+17+for+SQL+Server"
         )
