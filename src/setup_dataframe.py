@@ -14,36 +14,38 @@ Latest Revision: 2025-01-17
 import os
 import sqlite3
 import pandas as pd
-import pyodbc
+from sqlalchemy import create_engine
 
-def create_dataframe(connection_string: str) -> pd.DataFrame:
+def create_dataframe(dev: bool) -> pd.DataFrame:
     """
     Connects to MS SQL database and queries table information into dataframe.
     After reading in the data, close the connection to the SQL server
 
-    Note: For now, made up data will be added into the spreadsheet
-
     Args:
-        connection_string (str): in this case, it is just a path but represents sql server connection str
+        dev (bool): determines whether or not to use test database or MS SQL database
     Returns:
         raw_dataframe (pd.DataFrame): Dataframe that has the raw, un-formatted data
         from the SQL database. Each column will likely be objects.
     """
 
-    connection = sqlite3.connect(connection_string)
-
-    connection_string = (
-        "Driver={ODBC Driver 17 for SQL Server};"
-        "Server=URBAN-LAPTOP;"  # Replace with your server name
-        "Database=Fake_Tasi_Database;"  # Replace with your database name
-        "Trusted_Connection=yes;"  # Use 'yes' for Windows Authentication
-    )
-
-    connection = pyodbc.connect(connection_string)
+    if dev:
+        connection_string = "data/dev.db"
+        connection = sqlite3.connect(connection_string)
+    else:
+        # MS SQL Server connection using SQLAlchemy
+        connection_string = (
+            "mssql+pyodbc://username:password@URBAN-LAPTOP/Fake_Tasi_Database?driver=ODBC+Driver+17+for+SQL+Server"
+        )
+        engine = create_engine(connection_string)
+        connection = engine.connect()
+    
 
     # Query the database
     query = "SELECT * FROM claim_transmittal_table;"
     df = pd.read_sql_query(query, connection)
+
+    # Close the connection
+    connection.close()
 
     return df
 
