@@ -4,7 +4,7 @@ import datetime
 from src import export_excel, setup_dataframe
 
 
-def main(excel_file_name: str):
+def main(excel_file_name: str, dev: bool):
 
     # Loading configuration file with formatting parameters
     with open("config.json", encoding='utf-8') as f:
@@ -13,8 +13,7 @@ def main(excel_file_name: str):
     """Setting Up Dataframe"""
 
     # Read in dataframe and format data
-    server_connection_string = "data/medical_data.db"
-    raw_dataframe = setup_dataframe.create_dataframe(server_connection_string)
+    raw_dataframe = setup_dataframe.create_dataframe(dev)
 
     # Rename the headers of the dataframe
     renamed_headers = setup_dataframe.transform_header(raw_dataframe, mapping_dict=config_dict["database_fields_to_headers"])
@@ -45,6 +44,7 @@ if __name__ == "__main__":
     # Define parser and arguments
     parser = argparse.ArgumentParser(prog="main.py")
     parser.add_argument("-n", "--name", type=str, help="Specify name of the excel file", required=False)
+    parser.add_argument("-d", "--dev", action="store_true", help="Use flag to activate dev mode and use test database", required=False)
 
     args = parser.parse_args()
 
@@ -58,4 +58,9 @@ if __name__ == "__main__":
     else:
         file_name = default_file_name + ".xlsx"
 
-    main(file_name)
+    if args.dev:
+        dev = True
+    else:
+        dev = False
+
+    main(file_name, dev)

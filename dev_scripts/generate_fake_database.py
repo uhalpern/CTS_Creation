@@ -4,7 +4,7 @@ import os
 
 # Go up one level from the current working directory
 parent_dir = os.path.abspath(os.path.join(os.getcwd(), '..'))
-database_path = os.path.join(parent_dir, 'data', 'test_medical_data.db')
+database_path = os.path.join(parent_dir, 'data', 'dev.db')
 
 print("\nParent Directory:", parent_dir)
 print("\nDatabase Path:", database_path)
@@ -18,7 +18,7 @@ if not os.path.exists(database_path):
 
     # Create the table
     cursor.execute('''
-    CREATE TABLE medical_data (
+    CREATE TABLE claim_transmittal_table (
         control_account_number VARCHAR(20),
         last_name VARCHAR(60),
         first_name VARCHAR(35),
@@ -45,7 +45,7 @@ if not os.path.exists(database_path):
 
     data = data * 10
     
-    cursor.executemany("INSERT INTO medical_data VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", data)
+    cursor.executemany("INSERT INTO claim_transmittal_table VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", data)
 
     # Save and close
     connection.commit()
