@@ -40,7 +40,7 @@ def create_dataframe(dev: bool) -> pd.DataFrame:
         # - If your SQL Server is hosted remotely, replace 'URBAN-LAPTOP' with the server's public IP or hostname.
         # - Make sure to install the 'ODBC Driver 17 for SQL Server' on your machine.
         connection_string = (
-            "mssql+pyodbc://username:password@URBAN-LAPTOP/Fake_Tasi_Database?driver=ODBC+Driver+17+for+SQL+Server"
+            "mssql+pyodbc://username:password@URBAN-LAPTOP/Fake_Tasi_Database?driver=ODBC+Driver+17+for+SQL+Server&Trusted_Connection=yes"
         )
         engine = create_engine(connection_string)
         connection = engine.connect()

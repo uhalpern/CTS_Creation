@@ -27,11 +27,11 @@ def main(excel_file_name: str, dev: bool):
     num_rows = final_df.shape[0]
 
     # Ingest Data into spreadsheet
-    workbook = export_excel.insert_into_template(final_df, validation_format_dict=config_dict["formatting"])
+    workbook = export_excel.insert_into_template(final_df, config_dict["formatting"], config_dict["sheetname"])
 
     # Apply protection to sheet
-    password = "test"
-    export_excel.protection_handler(workbook, config_dict["unprotected_columns"], password, num_rows)
+    password = config_dict["password"]
+    export_excel.protection_handler(workbook, config_dict["unprotected_columns"], config_dict["sheetname"], password, num_rows)
 
     # Save Workbook
     export_excel.save_workbook(workbook, excel_file_name)

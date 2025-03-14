@@ -39,6 +39,9 @@ def get_format(cell: openpyxl.cell.cell.Cell, validation_format_dict: dict, head
 
         # Style Formatting
         if style_format is not None:
+            if isinstance(cell.value, str) and cell.value.isdigit():  # Check if the string is a number
+                cell.value = int(cell.value)  # Convert to integer
+
             cell.number_format = style_format
 
         # Alignment
@@ -46,7 +49,7 @@ def get_format(cell: openpyxl.cell.cell.Cell, validation_format_dict: dict, head
             cell.alignment = Alignment(horizontal=alignment)
 
 
-def insert_into_template(final_df: pd.DataFrame, validation_format_dict: dict) -> openpyxl.workbook.workbook.Workbook:
+def insert_into_template(final_df: pd.DataFrame, validation_format_dict: dict, sheet_name: str) -> openpyxl.workbook.workbook.Workbook:
     """
     Inserts data into the template spreadsheet using data from the final_df by column
 
@@ -54,6 +57,7 @@ def insert_into_template(final_df: pd.DataFrame, validation_format_dict: dict) -
         final_df (pandas.dataframe): dataframe which holds transformed data from SQL query
         validation_format_dict (dict): dictionary that holds formatting for each column
         workbook_name (str): name of workbook that will be saved after data is ingested
+        sheet_name (str): name of sheet to access
 
     Returns:
         workbook (openpyxl.workbook.workbook.Workbook): workbook with ingested data
@@ -67,7 +71,7 @@ def insert_into_template(final_df: pd.DataFrame, validation_format_dict: dict) -
     template_file_path = os.path.join(parent_dir, 'CTS_Example_Template.xlsx')
 
     workbook = load_workbook(template_file_path)
-    sheet = workbook["MAP or COFA"]
+    sheet = workbook[sheet_name]
 
     # Iterate though the columns in the dataframe
     for col_name in final_df.columns:
@@ -115,7 +119,7 @@ def save_workbook(workbook: openpyxl.workbook.Workbook, workbook_name: str = "CT
     return save_path
 
 
-def protection_handler(workbook: openpyxl.workbook.Workbook, cols_to_unprotect: list,
+def protection_handler(workbook: openpyxl.workbook.Workbook, cols_to_unprotect: list, sheet_name: str,
                        password: str = "test", row_range: int = 50) -> None:
     """
     Un-protects columns that do not need protection. Should only unprotect
@@ -126,18 +130,19 @@ def protection_handler(workbook: openpyxl.workbook.Workbook, cols_to_unprotect: 
         cols_to_unprotect (list): List of column headers to unprotect
         password (str): password to unlock the sheet
         range (int): range of cells in column to unprotect
+        sheet_name: name of sheet to access
 
     """
 
     # Protect all cells and set password
-    sheet = workbook["MAP or COFA"]
+    sheet = workbook[sheet_name]
     sheet.protection.enable()
     sheet.protection.password = password
 
     for column in cols_to_unprotect:
         col_letter = get_column_letter(sheet, column)
 
-        unlock_column(sheet, col_letter, row_range)
+        unlock_column(sheet, col_letter, row_range+1)
 
 
 def get_column_letter(sheet: openpyxl.worksheet.worksheet.Worksheet, column_name: str) -> str:

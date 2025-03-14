@@ -80,5 +80,7 @@
         "CONTRACTUAL ADJUSTMENT",
         "ADJUSTMENT REASON",
         "NOTE"
-    ]
+    ],
+    "password": "test",
+    "sheetname": "MAP or COFA"
 }
